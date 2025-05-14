@@ -3,13 +3,15 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthController } from './adapter/in/web/auth.controller';
+import { AuthTokenController } from './adapter/in/web/auth-token.controller';
+import { UserRoleController } from './adapter/in/web/user-role.controller';
 import { UserPersistenceAdapter } from './adapter/out/persistence/user-persistence.adapter';
 import { UserEntity, UserSchema } from './adapter/out/persistence/user.entity';
 import { LoginUserService } from './application/service/login-user.service';
 import { RefreshAccessTokenService } from './application/service/refresh-access-token.service';
 import { SignupUserService } from './application/service/signup-user.service';
 import { UpdateUserRoleService } from './application/service/update-user-role.service';
+import { AuthSessionController } from './adapter/in/web/auth-session.controller';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { UpdateUserRoleService } from './application/service/update-user-role.se
       signOptions: { expiresIn: '1h' },
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthSessionController, AuthTokenController, UserRoleController],
   providers: [
     SignupUserService,
     LoginUserService,
