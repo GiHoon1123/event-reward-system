@@ -5,7 +5,6 @@ import { JwtService } from '@nestjs/jwt';
 import { RefreshAccessTokenCommand } from '../port/in/command/refresh-access-token.command';
 import { RefreshAccessTokenUseCase } from '../port/in/refresh-access-token.usecase';
 import { UserPersistencePort } from '../port/out/user-persistence.port';
-import { error } from 'console';
 
 @Injectable()
 export class RefreshAccessTokenService implements RefreshAccessTokenUseCase {
@@ -25,7 +24,7 @@ export class RefreshAccessTokenService implements RefreshAccessTokenUseCase {
       payload = this.jwtService.verify(refreshToken, {
         secret: process.env.JWT_REFRESH_SECRET,
       });
-    } catch {
+    } catch (error) {
       if (error.name === 'TokenExpiredError') {
         throw new UnauthorizedException('리프레시 토큰이 만료되었습니다.');
       }
