@@ -108,7 +108,7 @@ export class RewardClaimHistoryRepository {
     };
   }
 
-  async findByAdminWithFilters(
+  async findAllWithFilters(
     filters: {
       userEmail?: string;
       eventId?: string;

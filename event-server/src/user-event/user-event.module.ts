@@ -3,25 +3,29 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EventModule } from 'src/event/event.module';
-import { RewardService } from './application/service/reward.service';
 import { UserProgressService } from './application/service/user-progress.service';
+import { UserRewardService } from './application/service/user-reward.service';
 import {
   RewardClaimHistoryEntity,
   RewardClaimHistorySchema,
 } from './infrastructure/reward-claim-history.entity';
 import { RewardClaimHistoryRepository } from './infrastructure/reward-claim-history.repository';
 import {
-  UserEventEntity,
-  UserEventEntitySchema,
-} from './infrastructure/user-event.entity';
-import { UserEventRepository } from './infrastructure/user-event.repository';
-import { RewardController } from './web/reward.controller';
+  UserEventProgressEntity,
+  UserEventProgressEntitySchema,
+} from './infrastructure/user-event-progress.entity';
+import { UserEventRepository } from './infrastructure/user-event-progress.repository';
 import { UserProgressController } from './web/user-progress.controller';
+import { UserRewardHistoryController } from './web/user-reward-history.controller';
+import { UserRewardController } from './web/user-reward.controller';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: UserEventEntity.name, schema: UserEventEntitySchema },
+      {
+        name: UserEventProgressEntity.name,
+        schema: UserEventProgressEntitySchema,
+      },
       {
         name: RewardClaimHistoryEntity.name,
         schema: RewardClaimHistorySchema,
@@ -29,12 +33,16 @@ import { UserProgressController } from './web/user-progress.controller';
     ]),
     EventModule,
   ],
-  controllers: [UserProgressController, RewardController],
+  controllers: [
+    UserProgressController,
+    UserRewardController,
+    UserRewardHistoryController,
+  ],
   providers: [
     UserEventRepository,
     RewardClaimHistoryRepository,
     UserProgressService,
-    RewardService,
+    UserRewardService,
   ],
   exports: [],
 })

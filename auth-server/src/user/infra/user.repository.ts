@@ -1,23 +1,22 @@
-// src/user/adapter/out/persistence/user-persistence.adapter.ts
+// src/user/infra/user.repository.ts
 
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserPersistencePort } from '../../../application/port/out/user-persistence.port';
-import { Role, User } from '../../../domain/user';
+import { Role, User } from '../domain/user';
 import { UserDocument, UserEntity } from './user.entity';
 import { UserMapper } from './user.mapper';
 
 @Injectable()
-export class UserPersistenceAdapter implements UserPersistencePort {
+export class UserRepository {
   constructor(
     @InjectModel(UserEntity.name)
     private readonly userModel: Model<UserDocument>,
   ) {}
 
   async existsByEmail(email: string): Promise<boolean> {
-    const count = await this.userModel.countDocuments({ email });
-    return count > 0;
+    const exists = await this.userModel.exists({ email });
+    return !!exists;
   }
 
   async save(user: User): Promise<User> {
@@ -31,24 +30,19 @@ export class UserPersistenceAdapter implements UserPersistencePort {
     return entity ? UserMapper.toDomain(entity) : null;
   }
 
-  async findById(userId: string): Promise<User | null> {
-    const user = await this.userModel.findById(userId);
-    return user ? UserMapper.toDomain(user) : null;
+  async findById(id: string): Promise<User | null> {
+    const entity = await this.userModel.findById(id);
+    return entity ? UserMapper.toDomain(entity) : null;
   }
 
-  async updateRoleByEmail(email: string, role: Role): Promise<void> {
-    await this.userModel.updateOne(
-      { email },
-      { $set: { role: role.toString() } }, // enum → string
-    );
-  }
-
-  async updateRefreshTokenByUserId(
+  async updateRefreshToken(
     userId: string,
     refreshToken: string,
   ): Promise<void> {
-    await this.userModel.findByIdAndUpdate(userId, {
-      refreshToken,
-    });
+    await this.userModel.findByIdAndUpdate(userId, { refreshToken });
+  }
+
+  async updateRoleByEmail(email: string, role: Role): Promise<void> {
+    await this.userModel.updateOne({ email }, { $set: { role } });
   }
 }

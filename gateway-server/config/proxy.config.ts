@@ -6,16 +6,29 @@ export const proxyRoutes: Record<string, Options> = {
   '/auth': {
     target: 'http://localhost:3000',
     changeOrigin: true,
-    pathRewrite: { '^/auth': '/auth' }, // prefix 유지
+  },
+  '/tokens': {
+    target: 'http://localhost:3000',
+    changeOrigin: true,
+  },
+  '/users': {
+    target: 'http://localhost:3000',
+    changeOrigin: true,
   },
   '/events': {
     target: 'http://localhost:3001',
     changeOrigin: true,
-    pathRewrite: { '^/events': '/events' },
+  },
+  '/progress': {
+    target: 'http://localhost:3001',
+    changeOrigin: true,
+  },
+  '/rewards': {
+    target: 'http://localhost:3001',
+    changeOrigin: true,
   },
   '/user-event': {
     target: 'http://localhost:3001',
     changeOrigin: true,
-    pathRewrite: { '^/user-event': '/user-event' },
   },
 };

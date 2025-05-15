@@ -1,6 +1,4 @@
-// src/user/adapter/out/persistence/user.mapper.ts
-
-import { User } from '../../../domain/user';
+import { User } from '../domain/user';
 import { UserEntity } from './user.entity';
 
 export class UserMapper {

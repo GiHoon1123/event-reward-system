@@ -1,0 +1,106 @@
+// src/user-event/web/reward-request.controller.ts
+
+import { Body, Controller, Get, Headers, Param, Post } from '@nestjs/common';
+import {
+  ApiBody,
+  ApiHeader,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+import { CommonResponse } from 'src/common/dto/common-response.dto';
+import { RequestRewardCommand } from '../application/command/request-reward.command';
+import { UserRewardService } from '../application/service/user-reward.service';
+import { ClaimRewardRequestDto } from './dto/claim-reward.request';
+
+@ApiTags('User-Event')
+@Controller('user-event/rewards')
+export class UserRewardController {
+  constructor(private readonly userRewardService: UserRewardService) {}
+
+  @Post(':eventId')
+  @ApiHeader({
+    name: 'x-user-email',
+    required: true,
+    description: 'Gateway에서 전달된 사용자 이메일 (예: user@example.com)',
+  })
+  @ApiParam({
+    name: 'eventId',
+    required: true,
+    example: '6825653f6689c6a42ea1e038',
+    description: '보상을 요청할 이벤트 ID',
+  })
+  @ApiBody({
+    type: ClaimRewardRequestDto,
+    examples: {
+      default: {
+        summary: '보상 요청 예시',
+        value: {
+          name: '코어 잼스톤',
+          amount: 100,
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: '유저 보상 요청',
+    description: `
+    유저가 이벤트 조건을 만족한 경우, 보상을 요청합니다.  
+    - 보상은 일부만 요청할 수도 있고, 전체 수령도 가능합니다.  
+    - 이미 수령한 보상은 자동으로 무시되지 않습니다. 초과 요청만 거부됩니다.
+    - 성공/실패 여부는 개별 보상 기준이며 모두 기록됩니다.
+    `,
+  })
+  async requestReward(
+    @Param('eventId') eventId: string,
+    @Headers('x-user-email') email: string,
+    @Body() rewards: ClaimRewardRequestDto,
+  ): Promise<CommonResponse<void>> {
+    const command = new RequestRewardCommand(eventId, email, [
+      {
+        type: 'ITEM',
+        name: rewards.name,
+        amount: rewards.amount,
+      },
+    ]);
+
+    await this.userRewardService.requestReward(command);
+
+    return new CommonResponse(201, '보상 요청이 처리되었습니다.');
+  }
+
+  @Get(':eventId/available')
+  @ApiHeader({
+    name: 'x-user-email',
+    description: 'Gateway에서 전달된 사용자 이메일 (예: user@example.com)',
+    required: true,
+  })
+  @ApiParam({
+    name: 'eventId',
+    description: '이벤트 ID',
+    example: '6825653f6689c6a42ea1e038',
+  })
+  @ApiOperation({
+    summary: '수령 가능 보상 목록 조회',
+    description:
+      '유저가 아직 수령하지 않은 보상 목록과 남은 개수를 반환합니다.',
+  })
+  async getAvailableRewards(
+    @Param('eventId') eventId: string,
+    @Headers('x-user-email') email: string,
+  ): Promise<
+    CommonResponse<
+      {
+        name: string;
+        type: string;
+        availableAmount: number;
+      }[]
+    >
+  > {
+    const result = await this.userRewardService.getAvailableRewards(
+      eventId,
+      email,
+    );
+    return new CommonResponse(200, '남은 보상 목록 조회 성공', result);
+  }
+}

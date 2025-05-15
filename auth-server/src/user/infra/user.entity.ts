@@ -1,8 +1,6 @@
-// src/adapter/out/persistence/user.entity.ts
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Role } from '../../../domain/user';
+import { Role } from '../domain/user';
 
 @Schema({ collection: 'users' })
 export class UserEntity {

@@ -12,8 +12,8 @@ import { CommonResponse } from 'src/common/dto/common-response.dto';
 import { IncreaseLoginCountCommand } from '../application/command/increase-login-count.command';
 import { UserProgressService } from '../application/service/user-progress.service';
 
-@ApiTags('UserEvent')
-@Controller('user-event/progress')
+@ApiTags('Event-Progress')
+@Controller('progress')
 export class UserProgressController {
   constructor(private readonly userProgressService: UserProgressService) {}
 

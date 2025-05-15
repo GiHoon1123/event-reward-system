@@ -4,11 +4,11 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { EventRepository } from 'src/event/infra/event.repository';
 import { RewardClaimHistory } from 'src/user-event/domain/reward-claim-history';
 import { RewardClaimHistoryRepository } from 'src/user-event/infrastructure/reward-claim-history.repository';
-import { UserEventRepository } from 'src/user-event/infrastructure/user-event.repository';
+import { UserEventRepository } from 'src/user-event/infrastructure/user-event-progress.repository';
 import { RequestRewardCommand } from '../command/request-reward.command';
 
 @Injectable()
-export class RewardService {
+export class UserRewardService {
   constructor(
     private readonly eventRepository: EventRepository,
     private readonly userEventRepository: UserEventRepository,
@@ -133,7 +133,7 @@ export class RewardService {
     );
   }
 
-  async getAdminHistoriesWithPage(
+  async getAHistoriesWithPage(
     filters: {
       userEmail?: string;
       eventId?: string;
@@ -143,7 +143,7 @@ export class RewardService {
     page: number,
     limit: number,
   ): Promise<{ totalCount: number; items: RewardClaimHistory[] }> {
-    return this.rewardClaimHistoryRepository.findByAdminWithFilters(
+    return this.rewardClaimHistoryRepository.findAllWithFilters(
       filters,
       page,
       limit,

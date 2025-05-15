@@ -1,5 +1,3 @@
-// src/user/domain/user.ts
-
 import { InvalidRoleException } from 'src/common/exception/custom/nvalid-role.exception';
 
 export enum Role {

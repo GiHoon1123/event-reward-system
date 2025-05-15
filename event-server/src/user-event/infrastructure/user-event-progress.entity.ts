@@ -4,7 +4,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema({ collection: 'user_event_progress', timestamps: true })
-export class UserEventEntity extends Document {
+export class UserEventProgressEntity extends Document {
   @Prop({ required: true, unique: true })
   userEmail: string;
 
@@ -18,8 +18,9 @@ export class UserEventEntity extends Document {
   updatedAt: Date;
 }
 
-export const UserEventEntitySchema =
-  SchemaFactory.createForClass(UserEventEntity);
+export const UserEventProgressEntitySchema = SchemaFactory.createForClass(
+  UserEventProgressEntity,
+);
 
-UserEventEntitySchema.set('versionKey', false);
-UserEventEntitySchema.set('toJSON', { virtuals: true });
+UserEventProgressEntitySchema.set('versionKey', false);
+UserEventProgressEntitySchema.set('toJSON', { virtuals: true });

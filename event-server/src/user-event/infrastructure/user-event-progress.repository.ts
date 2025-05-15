@@ -4,14 +4,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserEventProgress } from '../domain/user-event-progress';
-import { UserEventEntity } from './user-event.entity';
-import { UserEventMapper } from './user-event.mapper';
+import { UserEventProgressEntity } from './user-event-progress.entity';
+import { UserEventMapper } from './user-event-progress.mapper';
 
 @Injectable()
 export class UserEventRepository {
   constructor(
-    @InjectModel(UserEventEntity.name)
-    private readonly userEventModel: Model<UserEventEntity>,
+    @InjectModel(UserEventProgressEntity.name)
+    private readonly userEventModel: Model<UserEventProgressEntity>,
   ) {}
 
   async findByUserEmail(email: string): Promise<UserEventProgress | null> {
