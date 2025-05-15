@@ -1,0 +1,35 @@
+// src/user-event/infrastructure/reward-claim-history.entity.ts
+
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
+@Schema({ collection: 'reward_claim_histories', timestamps: true })
+export class RewardClaimHistoryEntity extends Document {
+  @Prop({ required: true })
+  eventId: string;
+
+  @Prop({ required: true })
+  userEmail: string;
+
+  @Prop({ required: true })
+  rewardName: string;
+
+  @Prop({ required: true })
+  amount: number;
+
+  @Prop({ required: true, enum: ['SUCCESS', 'FAILURE'] })
+  status: 'SUCCESS' | 'FAILURE';
+
+  @Prop({ default: null })
+  reason?: string;
+
+  @Prop({ default: Date.now })
+  claimedAt: Date;
+}
+
+export const RewardClaimHistorySchema = SchemaFactory.createForClass(
+  RewardClaimHistoryEntity,
+);
+
+RewardClaimHistorySchema.set('versionKey', false);
+RewardClaimHistorySchema.set('toJSON', { virtuals: true });
