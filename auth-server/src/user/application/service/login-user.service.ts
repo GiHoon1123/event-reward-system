@@ -34,7 +34,7 @@ export class LoginUserService implements LoginUserUseCase {
       );
     }
 
-    const payload = { sub: user.id, role: user.role };
+    const payload = { sub: user.id, role: user.role, email: user.email };
 
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,

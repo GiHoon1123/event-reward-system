@@ -37,7 +37,7 @@ export class RefreshAccessTokenService implements RefreshAccessTokenUseCase {
     }
 
     const newAccessToken = this.jwtService.sign(
-      { sub: user.id, role: user.role },
+      { sub: user.id, role: user.role, email: user.email },
       {
         secret: process.env.JWT_SECRET,
         expiresIn: '1h',
