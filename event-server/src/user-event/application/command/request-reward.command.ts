@@ -1,5 +1,3 @@
-// src/user-event/application/command/request-reward.command.ts
-
 import { RewardType } from 'src/event/domain/reward';
 
 export class RequestRewardCommand {

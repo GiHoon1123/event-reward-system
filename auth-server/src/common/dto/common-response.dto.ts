@@ -1,5 +1,3 @@
-// src/common/dto/common-response.dto.ts
-
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CommonResponse<T> {

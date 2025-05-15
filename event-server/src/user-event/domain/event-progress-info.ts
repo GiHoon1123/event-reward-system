@@ -1,5 +1,3 @@
-// src/user-event/domain/event-progress-info.ts
-
 export class EventProgressInfo {
   constructor(
     public readonly eventId: string,

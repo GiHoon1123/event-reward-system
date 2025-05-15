@@ -1,5 +1,3 @@
-// src/user-event/infrastructure/reward-claim-history.repository.ts
-
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
@@ -108,22 +106,11 @@ export class RewardClaimHistoryRepository {
     };
   }
 
-  async findAllWithFilters(
-    filters: {
-      userEmail?: string;
-      eventId?: string;
-      status?: string;
-      rewardId?: string;
-    },
+  async findAllWithPage(
     page: number,
     limit: number,
   ): Promise<{ totalCount: number; items: RewardClaimHistory[] }> {
     const query: any = {};
-
-    if (filters.userEmail) query.userEmail = filters.userEmail;
-    if (filters.eventId) query.eventId = filters.eventId;
-    if (filters.status) query.status = filters.status;
-    if (filters.rewardId) query['rewards.rewardId'] = filters.rewardId;
 
     const [items, totalCount] = await Promise.all([
       this.model

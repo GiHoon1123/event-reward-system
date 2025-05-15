@@ -18,10 +18,15 @@ async function bootstrap() {
   SwaggerModule.setup('api-docs', app, document);
 
   // 글로벌 유효성 파이프 적용 (class-validator)
-  app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
-  );
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // DTO에 없는 값 제거
+      forbidNonWhitelisted: true, // DTO에 정의되지 않은 값이 들어오면 에러
+      transform: true, // query param 등도 타입 변환
+    }),
+  );
 
   await app.listen(process.env.PORT ?? 3000);
 }

@@ -1,5 +1,3 @@
-// src/event/application/command/create-event.command.ts
-
 export class CreateEventCommand {
   constructor(
     public readonly title: string,

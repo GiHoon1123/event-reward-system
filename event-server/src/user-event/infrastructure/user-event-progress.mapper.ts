@@ -8,10 +8,15 @@ export class UserEventMapper {
     return {
       userEmail: domain.userEmail,
       loginCount: domain.getLoginCount(),
+      status: domain.getStatus(),
     };
   }
 
   static toDomain(entity: UserEventProgressEntity): UserEventProgress {
-    return new UserEventProgress(entity.userEmail, entity.loginCount);
+    return new UserEventProgress(
+      entity.userEmail,
+      entity.loginCount,
+      entity.status,
+    );
   }
 }

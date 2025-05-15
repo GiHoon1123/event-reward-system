@@ -1,5 +1,3 @@
-// src/user-event/infrastructure/user-event.repository.ts
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -14,15 +12,16 @@ export class UserEventRepository {
     private readonly userEventModel: Model<UserEventProgressEntity>,
   ) {}
 
-  async findByUserEmail(email: string): Promise<UserEventProgress | null> {
+  async findByUserEmail(email: string): Promise<UserEventProgress> {
     const found = await this.userEventModel.findOne({ userEmail: email });
-    if (found == null) {
+    if (!found) {
       throw new NotFoundException(
         `해당 유저는 아직 이벤트에 참여하지 않았습니다. 먼저 로그인하여 참여를 시작해 주세요. (email: ${email})`,
       );
     }
-    return found ? UserEventMapper.toDomain(found) : null;
+    return UserEventMapper.toDomain(found);
   }
+
   async save(progress: UserEventProgress): Promise<void> {
     const update = UserEventMapper.toEntity(progress);
     await this.userEventModel.updateOne(

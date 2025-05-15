@@ -13,7 +13,6 @@ export class Event {
       type: EventConditionType;
       value: number;
     },
-
     public readonly status: EventStatus,
     public readonly rewards: Reward[],
     public readonly createdBy: string,
@@ -27,7 +26,7 @@ export class Event {
     createdBy: string,
   ): Event {
     return new Event(
-      '', // 생성 시 ID는 비어 있음 (Mongo가 부여)
+      '',
       title,
       description,
       { type: 'LOGIN_COUNT', value: conditionValue },
@@ -43,7 +42,7 @@ export class Event {
   }
 
   isInActive(): boolean {
-    return this.status == 'INACTIVE';
+    return this.status === 'INACTIVE';
   }
 
   addRewards(rewards: Reward[], requester: string): void {
@@ -51,5 +50,39 @@ export class Event {
       throw new NotEventCreatorException();
     }
     this.rewards.push(...rewards);
+  }
+
+  markInactive(requester: string): Event {
+    if (requester !== this.createdBy) {
+      throw new NotEventCreatorException();
+    }
+
+    return new Event(
+      this.id,
+      this.title,
+      this.description,
+      this.condition,
+      'INACTIVE',
+      this.rewards,
+      this.createdBy,
+      this.createdAt,
+    );
+  }
+
+  markActive(requester: string): Event {
+    if (requester !== this.createdBy) {
+      throw new NotEventCreatorException();
+    }
+
+    return new Event(
+      this.id,
+      this.title,
+      this.description,
+      this.condition,
+      'ACTIVE',
+      this.rewards,
+      this.createdBy,
+      this.createdAt,
+    );
   }
 }

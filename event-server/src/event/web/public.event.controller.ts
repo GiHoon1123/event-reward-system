@@ -9,6 +9,7 @@ import {
 import { EventService } from '../application/service/\bevent.service';
 import { EventDetailResponseDto } from './dto/event-detail.response';
 import { EventListResponseDto } from './dto/event-list.response';
+import { MongoIdValidationPipe } from 'src/common/pipe/mongo-id-validation.pipe';
 
 @ApiTags('Public-Event')
 @Controller('events')
@@ -57,7 +58,7 @@ export class PublicEventController {
     description: '이벤트의 상세 정보 및 보상 목록을 조회합니다.',
   })
   async findById(
-    @Param('eventId') eventId: string,
+    @Param('eventId', MongoIdValidationPipe) eventId: string,
   ): Promise<CommonResponse<EventDetailResponseDto>> {
     const event = await this.eventService.findById(eventId);
     return new CommonResponse(

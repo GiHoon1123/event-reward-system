@@ -1,20 +1,33 @@
-// src/user-event/domain/user-event-progress.ts
+export type UserEventStatus = 'IN_PROGRESS' | 'COMPLETED';
 
 export class UserEventProgress {
   constructor(
     public readonly userEmail: string,
-    private loginCount: number = 0,
+    private loginCount: number,
+    private status: UserEventStatus = 'IN_PROGRESS',
   ) {}
 
-  static createInitial(email: string): UserEventProgress {
-    return new UserEventProgress(email, 1);
+  getLoginCount(): number {
+    return this.loginCount;
+  }
+
+  getStatus(): UserEventStatus {
+    return this.status;
   }
 
   increase(): void {
     this.loginCount++;
   }
 
-  getLoginCount(): number {
-    return this.loginCount;
+  markComplete(): void {
+    this.status = 'COMPLETED';
+  }
+
+  isCompleted(): boolean {
+    return this.status === 'COMPLETED';
+  }
+
+  static createInitial(email: string): UserEventProgress {
+    return new UserEventProgress(email, 0, 'IN_PROGRESS');
   }
 }

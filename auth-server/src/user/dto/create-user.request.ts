@@ -1,5 +1,3 @@
-// src/user/dto/create-user.request.ts
-
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,

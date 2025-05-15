@@ -1,5 +1,3 @@
-// src/user-event/domain/reward-claim-history.ts
-
 export class RewardClaimHistory {
   constructor(
     public readonly eventId: string,

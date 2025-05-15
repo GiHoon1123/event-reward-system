@@ -1,5 +1,3 @@
-// src/user-event/application/service/reward-request.service.ts
-
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { EventRepository } from 'src/event/infra/event.repository';
 import { RewardClaimHistory } from 'src/user-event/domain/reward-claim-history';
@@ -14,11 +12,12 @@ export class UserRewardService {
     private readonly userEventRepository: UserEventRepository,
     private readonly rewardClaimHistoryRepository: RewardClaimHistoryRepository,
   ) {}
+
   async requestReward(command: RequestRewardCommand): Promise<void> {
     const { eventId, userEmail, rewardsToClaim } = command;
     const reward = rewardsToClaim[0]; // 단일 요청이므로 첫 번째 하나만 처리
 
-    const event = await this.eventRepository.findById(eventId);
+    const event = await this.eventRepository.findActiveById(eventId);
     const userProgress =
       await this.userEventRepository.findByUserEmail(userEmail);
 
@@ -40,6 +39,20 @@ export class UserRewardService {
 
       throw new BadRequestException(
         `이벤트 조건을 만족하지 않았습니다. (진행도: ${rate}%, 총 ${required}회 중 ${current}회 완료, ${remaining}회 남음)`,
+      );
+    }
+
+    if (!userProgress.isCompleted()) {
+      const failure = RewardClaimHistory.failure(
+        eventId,
+        userEmail,
+        reward.name,
+        reward.amount,
+        `퀘스트 미 완료 `,
+      );
+      await this.rewardClaimHistoryRepository.save(failure);
+      throw new BadRequestException(
+        '퀘스트 완료 후에만 보상을 받을 수 있습니다.',
       );
     }
 
@@ -105,7 +118,7 @@ export class UserRewardService {
       availableAmount: number;
     }[]
   > {
-    const event = await this.eventRepository.findById(eventId);
+    const event = await this.eventRepository.findActiveById(eventId);
     const histories =
       await this.rewardClaimHistoryRepository.findByEventAndUserSuccessOnly(
         eventId,
@@ -133,20 +146,10 @@ export class UserRewardService {
     );
   }
 
-  async getAHistoriesWithPage(
-    filters: {
-      userEmail?: string;
-      eventId?: string;
-      status?: 'SUCCESS' | 'FAILURE';
-      rewardId?: string; // 필요 시 확장 가능
-    },
+  async getHistoriesWithPage(
     page: number,
     limit: number,
   ): Promise<{ totalCount: number; items: RewardClaimHistory[] }> {
-    return this.rewardClaimHistoryRepository.findAllWithFilters(
-      filters,
-      page,
-      limit,
-    );
+    return this.rewardClaimHistoryRepository.findAllWithPage(page, limit);
   }
 }

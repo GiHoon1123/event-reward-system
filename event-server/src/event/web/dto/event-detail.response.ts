@@ -1,5 +1,3 @@
-// src/event/web/dto/event-detail.response.ts
-
 import { ApiProperty } from '@nestjs/swagger';
 import { Reward } from 'src/event/domain/reward';
 

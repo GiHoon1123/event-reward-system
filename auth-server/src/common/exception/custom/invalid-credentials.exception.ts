@@ -1,5 +1,3 @@
-// src/user/exception/invalid-credentials.exception.ts
-
 import { UnauthorizedException } from '@nestjs/common';
 
 export class InvalidCredentialsException extends UnauthorizedException {

@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -15,6 +16,14 @@ async function bootstrap() {
   SwaggerModule.setup('api-docs', app, document);
 
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // DTO에 없는 값 제거
+      forbidNonWhitelisted: true, // DTO에 정의되지 않은 값이 들어오면 에러
+      transform: true, // query param 등도 타입 변환
+    }),
+  );
   await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();

@@ -46,7 +46,22 @@ export class EventService {
 
   async findById(id: string): Promise<Event> {
     const event = await this.eventRepository.findById(id);
-    if (!event) throw new NotFoundException('해당 이벤트를 찾을 수 없습니다.');
+
     return event;
+  }
+
+  async changeStatus(
+    eventId: string,
+    to: 'ACTIVE' | 'INACTIVE',
+    requestedBy: string,
+  ): Promise<void> {
+    const event = await this.eventRepository.findById(eventId);
+
+    const updated =
+      to === 'ACTIVE'
+        ? event.markActive(requestedBy)
+        : event.markInactive(requestedBy);
+
+    await this.eventRepository.updateStatus(eventId, updated.status);
   }
 }

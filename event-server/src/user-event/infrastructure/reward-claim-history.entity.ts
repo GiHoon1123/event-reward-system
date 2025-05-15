@@ -1,5 +1,3 @@
-// src/user-event/infrastructure/reward-claim-history.entity.ts
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 

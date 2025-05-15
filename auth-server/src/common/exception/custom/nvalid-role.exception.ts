@@ -1,5 +1,3 @@
-// src/user/exception/invalid-role.exception.ts
-
 import { BadRequestException } from '@nestjs/common';
 
 export class InvalidRoleException extends BadRequestException {

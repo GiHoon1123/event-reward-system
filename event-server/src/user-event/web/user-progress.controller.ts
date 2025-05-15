@@ -1,5 +1,3 @@
-// src/user-event/web/user-progress.controller.ts
-
 import { Controller, Get, Headers, Param, Post } from '@nestjs/common';
 import {
   ApiHeader,
@@ -9,6 +7,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CommonResponse } from 'src/common/dto/common-response.dto';
+import { MongoIdValidationPipe } from 'src/common/pipe/mongo-id-validation.pipe';
 import { IncreaseLoginCountCommand } from '../application/command/increase-login-count.command';
 import { UserProgressService } from '../application/service/user-progress.service';
 
@@ -61,7 +60,7 @@ export class UserProgressController {
     type: CommonResponse,
   })
   async getProgress(
-    @Param('eventId') eventId: string,
+    @Param('eventId', MongoIdValidationPipe) eventId: string,
     @Headers('x-user-email') email: string,
   ): Promise<
     CommonResponse<{
@@ -81,5 +80,36 @@ export class UserProgressController {
       met: info.isSatisfied(),
       rate: info.getRate(),
     });
+  }
+
+  @ApiOperation({ summary: '이벤트 완료 처리' })
+  @Post(':eventId/complete')
+  @ApiHeader({
+    name: 'x-user-email',
+    description: '요청 유저 이메일 (예 user@example.com)',
+    required: true,
+  })
+  @ApiParam({
+    name: 'eventId',
+    description: '진행도를 확인할 이벤트 ID',
+    example: '6825653f6689c6a42ea1e038',
+  })
+  @ApiOperation({
+    summary: '이벤트 완료 처리',
+    description: `
+이벤트 참여 요건을 만족한 후, 이벤트 완료 처리를 진행합니다. 완료된 이후에는 보상을 수령할 수 있습니다.  
+    `,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '진행도 조회 성공',
+    type: CommonResponse,
+  })
+  async completeEvent(
+    @Param('eventId', MongoIdValidationPipe) eventId: string,
+    @Headers('x-user-email') email: string,
+  ): Promise<CommonResponse<void>> {
+    await this.userProgressService.markAsComplete(eventId, email);
+    return new CommonResponse(200, '이벤트가 완료 처리되었습니다.', null);
   }
 }

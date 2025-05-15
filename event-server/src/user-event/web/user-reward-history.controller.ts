@@ -1,5 +1,3 @@
-// src/user-event/web/reward-request.controller.ts
-
 import { Controller, Get, Headers, Query } from '@nestjs/common';
 import { ApiHeader, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
@@ -62,38 +60,16 @@ export class UserRewardHistoryController {
     required: true,
     description: '페이지당 항목 수',
   })
-  @ApiQuery({
-    name: 'userEmail',
-    required: false,
-    example: 'user@example.com',
-    description: '유저 이메일로 필터링',
-  })
-  @ApiQuery({
-    name: 'eventId',
-    required: false,
-    example: '66447c9ee6b84708fc26a842',
-    description: '이벤트 ID로 필터링',
-  })
-  @ApiQuery({
-    name: 'status',
-    required: false,
-    enum: ['SUCCESS', 'FAILURE'],
-    description: '보상 요청 상태로 필터링',
-  })
   async getAHistoriesWithPage(
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-    @Query('userEmail') userEmail?: string,
-    @Query('eventId') eventId?: string,
-    @Query('status') status?: 'SUCCESS' | 'FAILURE',
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
   ): Promise<PaginatedResponse<RewardClaimHistory>> {
     const { totalCount, items } =
-      await this.userRewardService.getAHistoriesWithPage(
-        { userEmail, eventId, status },
-        page,
-        limit,
+      await this.userRewardService.getHistoriesWithPage(
+        Number(page),
+        Number(limit),
       );
-    const meta = new PaginationMeta(page, limit, totalCount);
+    const meta = new PaginationMeta(Number(page), Number(limit), totalCount);
     return new PaginatedResponse(
       200,
       '어드민 보상 이력 조회 성공',

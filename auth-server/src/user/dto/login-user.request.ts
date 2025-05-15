@@ -1,5 +1,3 @@
-// src/user/dto/login-user.request.ts
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 

@@ -1,5 +1,3 @@
-// src/user-event/infrastructure/reward-claim-history.mapper.ts
-
 import { RewardClaimHistory } from '../domain/reward-claim-history';
 import { RewardClaimHistoryEntity } from './reward-claim-history.entity';
 
@@ -10,7 +8,9 @@ export class RewardClaimHistoryMapper {
       userEmail: history.userEmail,
       rewardName: history.rewardName,
       amount: history.amount,
+      status: history.status,
       claimedAt: history.claimedAt,
+      ...(history.reason && { reason: history.reason }), // ✅ reason이 있을 경우에만 포함
     };
   }
 

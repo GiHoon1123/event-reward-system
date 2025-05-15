@@ -1,5 +1,3 @@
-// src/event/web/dto/create-event.request.ts
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsNumber, IsString, Min } from 'class-validator';
 

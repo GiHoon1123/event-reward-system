@@ -1,16 +1,10 @@
-// src/initializer/initializer.service.ts
-
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/service/user.service';
 
 @Injectable()
 export class InitializerService implements OnModuleInit {
-  constructor(
-    private readonly userService: UserService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   async onModuleInit() {
     const email = process.env.ADMIN_EMAIL!;

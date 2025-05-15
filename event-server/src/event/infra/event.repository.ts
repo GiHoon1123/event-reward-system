@@ -1,8 +1,7 @@
-// src/event/infrastructure/event.repository.ts
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { InactiveEventException } from 'src/common/exception/custom/inactive-event.exception';
 import { Event } from '../domain/event';
 import { Reward } from '../domain/reward';
 import { EventEntity } from './event.entity';
@@ -21,13 +20,29 @@ export class EventRepository {
     return EventMapper.toDomain(created);
   }
 
-  async findById(id: string): Promise<Event | null> {
-    const entity = await this.eventModel.findById(id).exec();
+  async findById(eventId: string): Promise<Event | null> {
+    const entity = await this.eventModel.findById(eventId).exec();
     if (entity == null) {
-      throw new NotFoundException(`이벤트를 찾을 수 없습니다. (id: ${id})`);
+      throw new NotFoundException(
+        `이벤트가 존재하지 않습니다. (id: ${eventId})`,
+      );
     }
 
     return entity ? EventMapper.toDomain(entity) : null;
+  }
+
+  async findActiveById(eventId: string): Promise<Event> {
+    const entity = await this.eventModel.findById(eventId);
+    if (!entity) {
+      throw new NotFoundException(
+        `이벤트가 존재하지 않습니다. (id: ${eventId})`,
+      );
+    }
+    if (entity.status !== 'ACTIVE') {
+      throw new InactiveEventException();
+    }
+
+    return EventMapper.toDomain(entity);
   }
 
   async findAll(): Promise<Event[]> {
@@ -57,5 +72,14 @@ export class EventRepository {
 
   async count(): Promise<number> {
     return this.eventModel.countDocuments();
+  }
+
+  async updateStatus(
+    eventId: string,
+    status: 'ACTIVE' | 'INACTIVE',
+  ): Promise<void> {
+    await this.eventModel
+      .updateOne({ _id: eventId }, { $set: { status } })
+      .exec();
   }
 }

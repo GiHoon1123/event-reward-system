@@ -1,5 +1,3 @@
-// src/user-event/web/dto/claim-reward.request.ts
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsPositive, IsString } from 'class-validator';
 

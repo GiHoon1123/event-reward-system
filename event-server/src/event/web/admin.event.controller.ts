@@ -10,7 +10,9 @@ import { CommonResponse } from 'src/common/dto/common-response.dto';
 import { AddRewardsCommand } from 'src/event/application/command/add-rewards.command';
 import { CreateEventCommand } from 'src/event/application/command/create-event.command';
 
+import { MongoIdValidationPipe } from 'src/common/pipe/mongo-id-validation.pipe';
 import { EventService } from '../application/service/\bevent.service';
+import { ChangeEventStatusRequestDto } from './dto/change-event-status.request';
 import { CreateEventRequestDto } from './dto/create-event.request';
 import { RewardRequestDto } from './dto/reward.request';
 
@@ -28,7 +30,7 @@ export class AdminEventController {
   @ApiOperation({
     summary: '이벤트 등록',
     description: `
-**운영자 또는 관리자만 사용할 수 있습니다.**  
+**운영자 또는 관리자만 사용할 수 있습니다(ADMIN,OPERATOR)**  
 이벤트 조건, 기간, 설명 등을 등록합니다.  
 
 - 현재 조건은 \`LOGIN_COUNT\`로 고정되어 있습니다.  
@@ -94,16 +96,50 @@ export class AdminEventController {
 **해당 이벤트의 생성자만 호출할 수 있습니다.**  
 보상은 \`ITEM\` 타입으로 고정되어 있으며, 여러 개 등록 가능합니다.
 
-※ 다른 사용자가 요청하면 403 에러 발생
     `,
   })
   async addRewards(
-    @Param('eventId') eventId: string,
+    @Param('eventId', MongoIdValidationPipe) eventId: string,
     @Body() rewards: RewardRequestDto[],
     @Headers('x-user-email') email: string,
   ): Promise<CommonResponse<void>> {
     const command = new AddRewardsCommand(eventId, rewards, email);
     await this.eventService.addRewards(command);
     return new CommonResponse(201, '보상이 성공적으로 등록되었습니다.');
+  }
+
+  @Post(':eventId/status')
+  @ApiHeader({
+    name: 'x-user-email',
+    description: 'Gateway에서 전달된 사용자 이메일 (예: admin@example.com)',
+    required: true,
+  })
+  @ApiBody({
+    schema: {
+      example: {
+        status: 'INACTIVE',
+      },
+    },
+  })
+  @ApiOperation({
+    summary: '이벤트 상태 변경',
+    description: `
+이벤트 상태를 'ACTIVE' 또는 'INACTIVE'로 변경합니다.  
+**해당 이벤트의 생성자만 호출할 수 있습니다.**  
+상태값은 다음 두 가지만 허용됩니다:  
+- 'ACTIVE'  
+- 'INACTIVE'
+`,
+  })
+  async changeStatus(
+    @Param('eventId', MongoIdValidationPipe) eventId: string,
+    @Headers('x-user-email') email: string,
+    @Body() dto: ChangeEventStatusRequestDto, // ✅ 여기 DTO 바디 적용
+  ): Promise<CommonResponse<void>> {
+    await this.eventService.changeStatus(eventId, dto.status, email);
+    return new CommonResponse(
+      200,
+      `이벤트 상태가 ${dto.status}로 변경되었습니다.`,
+    );
   }
 }

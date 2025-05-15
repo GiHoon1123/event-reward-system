@@ -1,5 +1,3 @@
-// src/user-event/infrastructure/user-event.module.ts
-
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EventModule } from 'src/event/event.module';

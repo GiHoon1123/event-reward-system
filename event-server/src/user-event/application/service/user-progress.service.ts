@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { EventRepository } from 'src/event/infra/event.repository';
 
 import { EventProgressInfo } from 'src/user-event/domain/event-progress-info';
@@ -28,29 +28,11 @@ export class UserProgressService {
     await this.userEventRepository.save(progress);
   }
 
-  /**
-   * 유저가 특정 이벤트 조건을 만족했는지 확인
-   * @param eventId 이벤트 ID
-   * @param userEmail 유저 이메일
-   */
-  async hasMetCondition(eventId: string, userEmail: string): Promise<boolean> {
-    const event = await this.eventRepository.findById(eventId);
-    const userProgress =
-      (await this.userEventRepository.findByUserEmail(userEmail)) ??
-      UserEventProgress.createInitial(userEmail);
-
-    // 현재 시스템에서는 LOGIN_COUNT 조건으로 고정되어 있음
-    const currentLoginCount = userProgress.getLoginCount();
-    const requiredCount = event.condition.value;
-
-    return currentLoginCount >= requiredCount;
-  }
-
   async getProgressInfo(
     eventId: string,
     userEmail: string,
   ): Promise<EventProgressInfo> {
-    const event = await this.eventRepository.findById(eventId);
+    const event = await this.eventRepository.findActiveById(eventId);
     const userProgress =
       (await this.userEventRepository.findByUserEmail(userEmail)) ??
       UserEventProgress.createInitial(userEmail);
@@ -60,5 +42,23 @@ export class UserProgressService {
       userProgress.getLoginCount(),
       event.condition.value,
     );
+  }
+
+  async markAsComplete(eventId: string, email: string): Promise<void> {
+    const event = await this.eventRepository.findActiveById(eventId);
+    const progress = await this.userEventRepository.findByUserEmail(email);
+
+    if (progress.getLoginCount() < event.condition.value) {
+      throw new BadRequestException('아직 조건을 충족하지 않았습니다.');
+    }
+
+    if (progress.isCompleted()) {
+      throw new BadRequestException(
+        '이미 참여 완료한 이벤트입니다. 보상을 수령하세요',
+      );
+    }
+
+    progress.markComplete();
+    await this.userEventRepository.save(progress);
   }
 }

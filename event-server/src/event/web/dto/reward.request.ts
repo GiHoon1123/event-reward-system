@@ -1,5 +1,3 @@
-// src/event/web/dto/reward.request.ts
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsString, Min } from 'class-validator';
 

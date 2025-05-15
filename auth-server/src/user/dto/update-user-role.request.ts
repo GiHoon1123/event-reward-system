@@ -1,5 +1,3 @@
-// src/user/dto/update-user-role.request.ts
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsEnum } from 'class-validator';
 import { Role } from '../domain/user';

@@ -1,5 +1,3 @@
-// src/user/exception/email-already-registered.exception.ts
-
 import { ConflictException } from '@nestjs/common';
 
 export class EmailAlreadyRegisteredException extends ConflictException {

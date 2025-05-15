@@ -1,5 +1,3 @@
-// src/user-event/web/reward-request.controller.ts
-
 import { Body, Controller, Get, Headers, Param, Post } from '@nestjs/common';
 import {
   ApiBody,
@@ -9,6 +7,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CommonResponse } from 'src/common/dto/common-response.dto';
+import { MongoIdValidationPipe } from 'src/common/pipe/mongo-id-validation.pipe';
 import { RequestRewardCommand } from '../application/command/request-reward.command';
 import { UserRewardService } from '../application/service/user-reward.service';
 import { ClaimRewardRequestDto } from './dto/claim-reward.request';
@@ -52,7 +51,7 @@ export class UserRewardController {
     `,
   })
   async requestReward(
-    @Param('eventId') eventId: string,
+    @Param('eventId', MongoIdValidationPipe) eventId: string,
     @Headers('x-user-email') email: string,
     @Body() rewards: ClaimRewardRequestDto,
   ): Promise<CommonResponse<void>> {
@@ -86,7 +85,7 @@ export class UserRewardController {
       '유저가 아직 수령하지 않은 보상 목록과 남은 개수를 반환합니다.',
   })
   async getAvailableRewards(
-    @Param('eventId') eventId: string,
+    @Param('eventId', MongoIdValidationPipe) eventId: string,
     @Headers('x-user-email') email: string,
   ): Promise<
     CommonResponse<
