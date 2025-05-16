@@ -20,7 +20,7 @@ export class User {
     return new User(null, email, password, role);
   }
 
-  static fromPersistence(
+  static toDomain(
     id: string,
     email: string,
     password: string,

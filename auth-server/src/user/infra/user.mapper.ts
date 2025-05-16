@@ -3,7 +3,7 @@ import { UserEntity } from './user.entity';
 
 export class UserMapper {
   static toDomain(entity: UserEntity): User {
-    return User.fromPersistence(
+    return User.toDomain(
       entity._id.toString(),
       entity.email,
       entity.password,
