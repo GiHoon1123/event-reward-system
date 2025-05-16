@@ -1,5 +1,11 @@
 import { Controller, Get, Headers, Query } from '@nestjs/common';
-import { ApiHeader, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiHeader,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   PaginatedResponse,
   PaginationMeta,
@@ -8,11 +14,10 @@ import { UserRewardService } from '../application/service/user-reward.service';
 import { RewardClaimHistory } from '../domain/reward-claim-history';
 
 @ApiTags('Reward')
-@Controller('rewards')
+@Controller('events')
 export class UserRewardHistoryController {
   constructor(private readonly userRewardService: UserRewardService) {}
-
-  @Get('history/me')
+  @Get('rewards/history/me')
   @ApiOperation({ summary: '유저 보상 요청 이력 조회' })
   @ApiHeader({
     name: 'x-user-email',
@@ -31,6 +36,43 @@ export class UserRewardHistoryController {
     required: true,
     description: '페이지당 항목 수',
   })
+  @ApiResponse({
+    status: 200,
+    description: '보상 이력 조회 성공',
+    schema: {
+      example: {
+        statusCode: 200,
+        message: '보상 이력 조회 성공',
+        data: [
+          {
+            eventId: '6826897559621cd773031bda',
+            userEmail: 'user@example.com',
+            rewardName: '코어 잼스톤',
+            amount: 100,
+            status: 'SUCCESS',
+            claimedAt: '2025-05-16T01:55:17.268Z',
+          },
+          {
+            eventId: '6826897559621cd773031bda',
+            userEmail: 'user@example.com',
+            rewardName: '코어 잼스톤',
+            amount: 100,
+            status: 'FAILURE',
+            claimedAt: '2025-05-16T01:53:24.338Z',
+            reason: '이벤트 미 완료 ',
+          },
+        ],
+        meta: {
+          page: 1,
+          limit: 20,
+          totalCount: 3,
+          totalPages: 1,
+          hasNext: false,
+          hasPrevious: false,
+        },
+      },
+    },
+  })
   async getUserHistoriesWithPage(
     @Headers('x-user-email') email: string,
     @Query('page') page = 1,
@@ -46,7 +88,7 @@ export class UserRewardHistoryController {
     return new PaginatedResponse(200, '보상 이력 조회 성공', items, meta);
   }
 
-  @Get('/history')
+  @Get('rewards/history')
   @ApiOperation({ summary: '어드민 - 전체 보상 요청 이력 조회' })
   @ApiQuery({
     name: 'page',
@@ -59,6 +101,43 @@ export class UserRewardHistoryController {
     example: 20,
     required: true,
     description: '페이지당 항목 수',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '어드민 보상 이력 조회 성공',
+    schema: {
+      example: {
+        statusCode: 200,
+        message: '어드민 보상 이력 조회 성공',
+        data: [
+          {
+            eventId: '6826897559621cd773031bda',
+            userEmail: 'user@example.com',
+            rewardName: '코어 잼스톤',
+            amount: 100,
+            status: 'SUCCESS',
+            claimedAt: '2025-05-16T01:55:17.268Z',
+          },
+          {
+            eventId: '6826897559621cd773031bda',
+            userEmail: 'user@example.com',
+            rewardName: '코어 잼스톤',
+            amount: 100,
+            status: 'FAILURE',
+            claimedAt: '2025-05-16T01:53:24.338Z',
+            reason: '이벤트 미 완료 ',
+          },
+        ],
+        meta: {
+          page: 1,
+          limit: 20,
+          totalCount: 3,
+          totalPages: 1,
+          hasNext: false,
+          hasPrevious: false,
+        },
+      },
+    },
   })
   async getAHistoriesWithPage(
     @Query('page') page = 1,

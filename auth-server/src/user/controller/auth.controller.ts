@@ -1,10 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiCreatedResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommonResponse } from 'src/common/dto/common-response.dto';
 import { Role } from '../domain/user';
 import { CreateUserRequestDto } from '../dto/create-user.request';
@@ -33,12 +28,21 @@ export class AuthController {
       },
     },
   })
-  @ApiCreatedResponse({ description: '등록 성공', type: CommonResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'USER 등록 성공',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: 'USER 등록 성공',
+      },
+    },
+  })
   async registerUser(
     @Body() dto: CreateUserRequestDto,
   ): Promise<CommonResponse<null>> {
     await this.userService.signup(dto.email, dto.password, Role.USER);
-    return new CommonResponse(201, 'USER 등록 성공', null);
+    return new CommonResponse(201, 'USER 등록 성공');
   }
 
   @Post('register/operator')
@@ -58,12 +62,21 @@ export class AuthController {
       },
     },
   })
-  @ApiCreatedResponse({ description: '등록 성공', type: CommonResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'OPERATOR 등록 성공',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: 'OPERATOR 등록 성공',
+      },
+    },
+  })
   async registerOperator(
     @Body() dto: CreateUserRequestDto,
   ): Promise<CommonResponse<null>> {
     await this.userService.signup(dto.email, dto.password, Role.OPERATOR);
-    return new CommonResponse(201, 'OPERATOR 등록 성공', null);
+    return new CommonResponse(201, 'OPERATOR 등록 성공');
   }
 
   @Post('register/auditor')
@@ -83,7 +96,16 @@ export class AuthController {
       },
     },
   })
-  @ApiCreatedResponse({ description: '등록 성공', type: CommonResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'AUDITOR 등록 성공',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: 'AUDITOR 등록 성공',
+      },
+    },
+  })
   async registerAuditor(
     @Body() dto: CreateUserRequestDto,
   ): Promise<CommonResponse<null>> {
@@ -108,7 +130,16 @@ export class AuthController {
       },
     },
   })
-  @ApiCreatedResponse({ description: '등록 성공', type: CommonResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'ADMIN 등록 성공',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: 'ADMIN 등록 성공',
+      },
+    },
+  })
   async registerAdmin(
     @Body() dto: CreateUserRequestDto,
   ): Promise<CommonResponse<null>> {
@@ -122,9 +153,21 @@ export class AuthController {
     description: '이메일과 비밀번호로 로그인하여 JWT 토큰을 발급받습니다.',
   })
   @ApiBody({ type: LoginUserRequestDto })
-  @ApiCreatedResponse({
+  @ApiResponse({
+    status: 201,
     description: '로그인 성공',
-    type: CommonResponse,
+    schema: {
+      example: {
+        statusCode: 201,
+        message: '로그인 성공',
+        data: {
+          accessToken:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODI2N2ZlMDU5NzA3ZjdhNzM0MDMyODciLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc0NzM1MzYwNCwiZXhwIjoxNzQ3OTU4NDA0fQ.N1iyhX6lroUr0AiuuK3V2-TRvlZtrQJYgEYv7MFV4pU',
+          refreshToken:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWI123123I2ODI2N2ZlMDU5NzA3ZjdhNzM0MDMyODciLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc0NzM1MzYwNCwiZXhwIjoxNzQ3OTU4NDA0fQ.N1iyhX6lroUr0AiuuK3V2-TRvlZtrQJYgEYv7MFV4pU',
+        },
+      },
+    },
   })
   async login(
     @Body() dto: LoginUserRequestDto,

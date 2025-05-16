@@ -22,22 +22,28 @@ export class EventRepository {
 
   async findById(eventId: string): Promise<Event | null> {
     const entity = await this.eventModel.findById(eventId).exec();
+    return entity ? EventMapper.toDomain(entity) : null;
+  }
+
+  async findByIdOrThrow(eventId: string): Promise<Event | null> {
+    const entity = await this.eventModel.findById(eventId).exec();
     if (entity == null) {
       throw new NotFoundException(
         `이벤트가 존재하지 않습니다. (id: ${eventId})`,
       );
     }
-
-    return entity ? EventMapper.toDomain(entity) : null;
+    return EventMapper.toDomain(entity);
   }
 
   async findActiveById(eventId: string): Promise<Event> {
     const entity = await this.eventModel.findById(eventId);
+
     if (!entity) {
       throw new NotFoundException(
         `이벤트가 존재하지 않습니다. (id: ${eventId})`,
       );
     }
+    console.log(entity.status !== 'ACTIVE');
     if (entity.status !== 'ACTIVE') {
       throw new InactiveEventException();
     }
@@ -78,6 +84,7 @@ export class EventRepository {
     eventId: string,
     status: 'ACTIVE' | 'INACTIVE',
   ): Promise<void> {
+    console.log('Updating status to:', status);
     await this.eventModel
       .updateOne({ _id: eventId }, { $set: { status } })
       .exec();

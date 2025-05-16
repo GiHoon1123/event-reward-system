@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Reward } from 'src/event/domain/reward';
 import { EventRepository } from 'src/event/infra/event.repository';
 import { Event } from '../../domain/event';
@@ -44,11 +44,11 @@ export class EventService {
   }
 
   async getRewardsByEventId(eventId: string): Promise<Event> {
-    return this.eventRepository.findById(eventId);
+    return this.eventRepository.findByIdOrThrow(eventId);
   }
 
   async getEventDetail(eventId: string) {
-    return await this.eventRepository.findById(eventId);
+    return await this.eventRepository.findByIdOrThrow(eventId);
   }
 
   async changeStatus(
@@ -56,8 +56,12 @@ export class EventService {
     to: 'ACTIVE' | 'INACTIVE',
     requestedBy: string,
   ): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
-
+    const event = await this.eventRepository.findByIdOrThrow(eventId);
+    if (event.createdBy != requestedBy) {
+      throw new BadRequestException(
+        `이벤트 상태 변경은 해당 이벤트를 등록한 유저만 가능합니다. (이벤트 등록 유저: ${event.createdBy})`,
+      );
+    }
     const updated =
       to === 'ACTIVE'
         ? event.markActive(requestedBy)

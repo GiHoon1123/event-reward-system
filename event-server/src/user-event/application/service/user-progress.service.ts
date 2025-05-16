@@ -22,7 +22,7 @@ export class UserProgressService {
       : UserEventProgress.createInitial(userEmail);
 
     if (existing) {
-      progress.increase(); // 기존이면 증가
+      progress.increase();
     }
 
     await this.userEventRepository.save(progress);
@@ -34,9 +34,8 @@ export class UserProgressService {
   ): Promise<EventProgressInfo> {
     const event = await this.eventRepository.findActiveById(eventId);
     const userProgress =
-      (await this.userEventRepository.findByUserEmail(userEmail)) ??
-      UserEventProgress.createInitial(userEmail);
-
+      await this.userEventRepository.findByUserEmailOrThrow(userEmail);
+    UserEventProgress.createInitial(userEmail);
     return new EventProgressInfo(
       eventId,
       userProgress.getLoginCount(),
@@ -44,21 +43,29 @@ export class UserProgressService {
     );
   }
 
-  async markAsComplete(eventId: string, email: string): Promise<void> {
+  async markAsComplete(eventId: string, userEmail: string): Promise<void> {
     const event = await this.eventRepository.findActiveById(eventId);
-    const progress = await this.userEventRepository.findByUserEmail(email);
+    const userProgress =
+      await this.userEventRepository.findByUserEmail(userEmail);
 
-    if (progress.getLoginCount() < event.condition.value) {
-      throw new BadRequestException('아직 조건을 충족하지 않았습니다.');
+    // 1. 조건 미달
+    if (!userProgress || userProgress.getLoginCount() < event.condition.value) {
+      const current = userProgress?.getLoginCount() ?? 0;
+      const required = event.condition.value;
+      const remaining = required - current;
+      const rate = Math.floor((current / required) * 100); // 백분율
+      throw new BadRequestException(
+        `이벤트 조건을 만족하지 않았습니다. (진행도: ${rate}%, 총 ${required}회 중 ${current}회 완료, ${remaining}회 남음)`,
+      );
     }
 
-    if (progress.isCompleted()) {
+    if (userProgress.isCompleted()) {
       throw new BadRequestException(
         '이미 참여 완료한 이벤트입니다. 보상을 수령하세요',
       );
     }
 
-    progress.markComplete();
-    await this.userEventRepository.save(progress);
+    userProgress.markComplete();
+    await this.userEventRepository.save(userProgress);
   }
 }

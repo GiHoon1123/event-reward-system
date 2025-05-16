@@ -12,52 +12,77 @@ import { IncreaseLoginCountCommand } from '../application/command/increase-login
 import { UserProgressService } from '../application/service/user-progress.service';
 
 @ApiTags('Event-Progress')
-@Controller('progress')
+@Controller('events')
 export class UserProgressController {
   constructor(private readonly userProgressService: UserProgressService) {}
 
-  @Post('login')
+  @Post('progress/users/login')
   @ApiHeader({
     name: 'x-user-email',
     description: '로그인한 유저의 이메일 (예: user@example.com)',
     required: true,
   })
   @ApiOperation({
-    summary: '유저 로그인 진행도 증가',
+    summary: '이벤트 진행도 증가',
     description:
-      '로그인 성공 시 호출되어 해당 유저의 로그인 횟수를 증가시킵니다.',
+      '로그인 성공 시 호출되며, 해당 유저의 로그인 이벤트 참여 횟수를 1 증가시킵니다.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: '진행도 증가 성공',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: '유저의 로그인 이벤트 진행도가 증가했습니다.',
+      },
+    },
   })
   async increaseLoginCount(
     @Headers('x-user-email') email: string,
   ): Promise<CommonResponse<void>> {
     const command = new IncreaseLoginCountCommand(email);
     await this.userProgressService.increaseLoginCount(command);
-    return new CommonResponse(201, '유저 로그인 진행도가 증가했습니다.');
+    return new CommonResponse(
+      201,
+      '유저의 로그인 이벤트 진행도가 증가했습니다.',
+    );
   }
 
-  @Get(':eventId')
+  @Get('progress/users/:eventId')
   @ApiHeader({
     name: 'x-user-email',
-    description: '요청 유저 이메일 (예 user@example.com)',
+    description: '요청 유저 이메일 (예: user@example.com)',
     required: true,
   })
   @ApiParam({
     name: 'eventId',
     description: '진행도를 확인할 이벤트 ID',
-    example: '68253391f243bc0bb1165f0b',
+    example: '6826897559621cd773031bda',
   })
   @ApiOperation({
     summary: '유저 이벤트 진행도 확인',
     description: `
-유저가 특정 이벤트의 조건을 얼마나 충족했는지 확인합니다.  
-조건은 현재 로그인 횟수(LOGIN_COUNT)로 고정되어 있으며,  
-진행률(%), 현재 카운트, 필요 카운트, 조건 만족 여부를 함께 반환합니다.
+  유저가 특정 이벤트의 조건을 얼마나 충족했는지 확인합니다.  
+  조건은 현재 로그인 횟수(LOGIN_COUNT)로 고정되어 있으며,  
+  진행률(%), 현재 카운트, 필요 카운트, 조건 만족 여부를 함께 반환합니다.
     `,
   })
   @ApiResponse({
     status: 200,
     description: '진행도 조회 성공',
-    type: CommonResponse,
+    schema: {
+      example: {
+        statusCode: 200,
+        message: '이벤트 진행도 조회 성공',
+        data: {
+          eventId: '6826897559621cd773031bda',
+          current: 1,
+          required: 3,
+          met: false,
+          rate: 33,
+        },
+      },
+    },
   })
   async getProgress(
     @Param('eventId', MongoIdValidationPipe) eventId: string,
@@ -83,7 +108,7 @@ export class UserProgressController {
   }
 
   @ApiOperation({ summary: '이벤트 완료 처리' })
-  @Post(':eventId/complete')
+  @Post('progress/users/:eventId/complete')
   @ApiHeader({
     name: 'x-user-email',
     description: '요청 유저 이메일 (예 user@example.com)',
@@ -92,7 +117,7 @@ export class UserProgressController {
   @ApiParam({
     name: 'eventId',
     description: '진행도를 확인할 이벤트 ID',
-    example: '6825653f6689c6a42ea1e038',
+    example: '6826897559621cd773031bda',
   })
   @ApiOperation({
     summary: '이벤트 완료 처리',
@@ -102,14 +127,19 @@ export class UserProgressController {
   })
   @ApiResponse({
     status: 200,
-    description: '진행도 조회 성공',
-    type: CommonResponse,
+    description: '이벤트가 완료 처리되었습니다.',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: '이벤트가 완료 처리되었습니다.',
+      },
+    },
   })
   async completeEvent(
     @Param('eventId', MongoIdValidationPipe) eventId: string,
     @Headers('x-user-email') email: string,
   ): Promise<CommonResponse<void>> {
     await this.userProgressService.markAsComplete(eventId, email);
-    return new CommonResponse(200, '이벤트가 완료 처리되었습니다.', null);
+    return new CommonResponse(200, '이벤트가 완료 처리되었습니다.');
   }
 }

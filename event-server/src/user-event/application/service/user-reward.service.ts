@@ -21,38 +21,17 @@ export class UserRewardService {
     const userProgress =
       await this.userEventRepository.findByUserEmail(userEmail);
 
-    // 1. 조건 미달
-    if (!userProgress || userProgress.getLoginCount() < event.condition.value) {
-      const current = userProgress?.getLoginCount() ?? 0;
-      const required = event.condition.value;
-      const remaining = required - current;
-      const rate = Math.floor((current / required) * 100); // 백분율
-
-      const failure = RewardClaimHistory.failure(
-        eventId,
-        userEmail,
-        reward.name,
-        reward.amount,
-        `이벤트 조건 불충족 (${current}/${required})`,
-      );
-      await this.rewardClaimHistoryRepository.save(failure);
-
-      throw new BadRequestException(
-        `이벤트 조건을 만족하지 않았습니다. (진행도: ${rate}%, 총 ${required}회 중 ${current}회 완료, ${remaining}회 남음)`,
-      );
-    }
-
     if (!userProgress.isCompleted()) {
       const failure = RewardClaimHistory.failure(
         eventId,
         userEmail,
         reward.name,
         reward.amount,
-        `퀘스트 미 완료 `,
+        `이벤트 미 완료 `,
       );
       await this.rewardClaimHistoryRepository.save(failure);
       throw new BadRequestException(
-        '퀘스트 완료 후에만 보상을 받을 수 있습니다.',
+        '이벤트 완료 후에만 보상을 받을 수 있습니다.',
       );
     }
 
@@ -118,6 +97,12 @@ export class UserRewardService {
       availableAmount: number;
     }[]
   > {
+    const userProgress =
+      await this.userEventRepository.findByUserEmailOrThrow(userEmail);
+
+    if (!userProgress.isCompleted) {
+      throw new BadRequestException(`이벤트 완료 신청을 먼저 진행해 주세요`);
+    }
     const event = await this.eventRepository.findActiveById(eventId);
     const histories =
       await this.rewardClaimHistoryRepository.findByEventAndUserSuccessOnly(

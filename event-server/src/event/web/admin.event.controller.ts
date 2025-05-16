@@ -166,6 +166,7 @@ export class AdminEventController {
     @Headers('x-user-email') email: string,
     @Body() dto: ChangeEventStatusRequestDto,
   ): Promise<CommonResponse<void>> {
+    await this.eventService.changeStatus(eventId, dto.status, email);
     return new CommonResponse(
       200,
       `이벤트 상태가 ${dto.status}로 변경되었습니다.`,
