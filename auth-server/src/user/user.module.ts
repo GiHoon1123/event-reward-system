@@ -6,7 +6,6 @@ import { AuthController } from './web/auth.controller';
 import { RoleController } from './web/role.controller';
 import { TokenController } from './web/token.controller';
 
-import { KafkaModule } from '../common/kafka/kafka.module';
 import { UserService } from './application/user.service';
 import { KafkaProducer } from './infra/kafka/kafka.producer';
 import { UserEntity, UserSchema } from './infra/user.entity';
@@ -14,7 +13,6 @@ import { UserRepository } from './infra/user.repository';
 
 @Module({
   imports: [
-    KafkaModule,
     MongooseModule.forFeature([{ name: UserEntity.name, schema: UserSchema }]),
     JwtModule.register({
       global: true,

@@ -5,7 +5,13 @@ import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath:
+        process.env.NODE_ENV === 'development'
+          ? '.env.development'
+          : '.env.production',
+    }),
     AuthModule,
     GatewayModule,
   ],

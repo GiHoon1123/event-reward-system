@@ -1,32 +1,19 @@
 import { Options } from 'http-proxy-middleware';
 
+const authTarget = process.env.AUTH_SERVER!;
+const eventTarget = process.env.EVENT_SERVER!;
+
 export const proxyRoutes: Record<string, Options> = {
   '/auth': {
-    target: 'http://localhost:3000',
+    target: authTarget,
     changeOrigin: true,
   },
-  '/tokens': {
-    target: 'http://localhost:3000',
-    changeOrigin: true,
-  },
-  '/users': {
-    target: 'http://localhost:3000',
+  '/admin': {
+    target: authTarget,
     changeOrigin: true,
   },
   '/events': {
-    target: 'http://localhost:3001',
-    changeOrigin: true,
-  },
-  '/progress': {
-    target: 'http://localhost:3001',
-    changeOrigin: true,
-  },
-  '/rewards': {
-    target: 'http://localhost:3001',
-    changeOrigin: true,
-  },
-  '/user-event': {
-    target: 'http://localhost:3001',
+    target: eventTarget,
     changeOrigin: true,
   },
 };

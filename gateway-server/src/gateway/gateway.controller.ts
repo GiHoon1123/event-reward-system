@@ -1,5 +1,7 @@
 import { All, Controller, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { DenyRoles } from 'src/auth/deny-roles.decorator';
+import { DenyRolesGuard } from 'src/auth/deny-roles.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
@@ -9,76 +11,75 @@ import { GatewayService } from './gateway.service';
 export class GatewayController {
   constructor(private readonly gatewayService: GatewayService) {}
 
-  // 인증 없이 열려 있는 경로들
-  @All('/auth/login')
-  async login(@Req() req: Request, @Res() res: Response) {
+  // 유저 등록은 ADMIN만 가능
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @All('/auth/register')
+  async register(@Req() req: Request, @Res() res: Response) {
     await this.gatewayService.forward(req, res);
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @All('auth/users/change-role')
+  async changeRole(@Req() req: Request, @Res() res: Response) {
+    await this.gatewayService.forward(req, res);
+  }
+
   // 인증 없이 열려 있는 경로들
   @All('/auth/tokens/refresh')
   async refresh(@Req() req: Request, @Res() res: Response) {
     await this.gatewayService.forward(req, res);
   }
 
-  // 역할 변경은 ADMIN만 허용
-  @All('auth/users/change-role')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
-  async changeRole(@Req() req: Request, @Res() res: Response) {
-    await this.gatewayService.forward(req, res);
-  }
-
-  // 등록은 ADMIN만 허용
-  @All('/auth/register')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
-  async register(@Req() req: Request, @Res() res: Response) {
-    await this.gatewayService.forward(req, res);
-  }
-
-  // user 전용 조회
-  @All('/rewards/history/me')
-  @UseGuards(JwtAuthGuard)
-  async getOwnHistory(@Req() req: Request, @Res() res: Response) {
-    await this.gatewayService.forward(req, res);
-  }
-
-  // 어드민용 전체 이력 조회
-  @All('/rewards/history')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'OPERATOR', 'AUDITOR')
-  async getAllHistory(@Req() req: Request, @Res() res: Response) {
+  // 인증 없이 열려 있는 경로들
+  @All('/auth/login')
+  async login(@Req() req: Request, @Res() res: Response) {
     await this.gatewayService.forward(req, res);
   }
 
   // 유저 보상 요청
+  @UseGuards(JwtAuthGuard, DenyRolesGuard)
+  @DenyRoles('AUDITOR') // 감사자는 접근 불가
   @All('/user-event/rewards/:eventId')
-  @UseGuards(JwtAuthGuard) // ✅ 인증만 필요, 역할 제한 없음
   async requestReward(@Req() req: Request, @Res() res: Response) {
     await this.gatewayService.forward(req, res);
   }
 
   // 수령 가능 보상 목록 조회
+  @UseGuards(JwtAuthGuard, DenyRolesGuard)
+  @DenyRoles('AUDITOR') // 감사자는 접근 불가
   @All('/user-event/rewards/:eventId/available')
-  @UseGuards(JwtAuthGuard) // ✅ 인증만 필요, 역할 제한 없음
   async getAvailableRewards(@Req() req: Request, @Res() res: Response) {
     await this.gatewayService.forward(req, res);
   }
 
-  //  관리자 전용 경로
+  //  관리자 전용 경로 (이벤트 생성, 이벤트 상태 변경, 보상 추가)
+  @UseGuards(JwtAuthGuard, DenyRolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
   @All('/admin/events')
-  @Roles('ADMIN', 'OPERATOR')
-  async createEvent(@Req() req, @Res() res) {
+  async eventSet(@Req() req, @Res() res) {
     return this.gatewayService.forward(req, res);
   }
 
-  @All('/admin/events/:eventId/rewards')
-  @Roles('ADMIN', 'OPERATOR')
-  async addRewards(@Req() req, @Res() res) {
-    return this.gatewayService.forward(req, res);
+  // user 전용 조회
+  @UseGuards(JwtAuthGuard, DenyRolesGuard)
+  @DenyRoles('AUDITOR') // 감사자는 접근 불가
+  @All('events/rewards/history/me')
+  async getOwnHistory(@Req() req: Request, @Res() res: Response) {
+    await this.gatewayService.forward(req, res);
   }
 
-  //  Public 조회 경로
+  // 어드민용 전체 이력 조회
+  @All('events/rewards/history')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'AUDITOR')
+  async getAllHistory(@Req() req: Request, @Res() res: Response) {
+    await this.gatewayService.forward(req, res);
+  }
+
+  @UseGuards(JwtAuthGuard, DenyRolesGuard)
+  @DenyRoles('AUDITOR') // 감사자는 접근 불가
   @All(['/events', '/events/:eventId'])
   async publicRead(@Req() req, @Res() res) {
     return this.gatewayService.forward(req, res);

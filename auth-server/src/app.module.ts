@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { InitializerModule } from './initializer/ initializer.module';
 import { UserModule } from './user/user.module';
+import { KafkaModule } from './common/kafka/kafka.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UserModule } from './user/user.module';
           : '.env.production',
     }),
     MongooseModule.forRoot(process.env.MONGO_URI),
+    KafkaModule,
     UserModule,
     InitializerModule,
   ],
