@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EventModule } from 'src/event/event.module';
+import { KafkaModule } from '../common/kafka/kafka.module';
 import { UserProgressService } from './application/service/user-progress.service';
 import { UserRewardService } from './application/service/user-reward.service';
 import {
@@ -16,9 +17,11 @@ import { UserEventRepository } from './infra/user-event-progress.repository';
 import { UserProgressController } from './web/user-progress.controller';
 import { UserRewardHistoryController } from './web/user-reward-history.controller';
 import { UserRewardController } from './web/user-reward.controller';
+import { LoginEventConsumer } from './infra/kafaka/login-event.consumer';
 
 @Module({
   imports: [
+    KafkaModule,
     MongooseModule.forFeature([
       {
         name: UserEventProgressEntity.name,
@@ -35,6 +38,7 @@ import { UserRewardController } from './web/user-reward.controller';
     UserProgressController,
     UserRewardController,
     UserRewardHistoryController,
+    LoginEventConsumer,
   ],
   providers: [
     UserEventRepository,

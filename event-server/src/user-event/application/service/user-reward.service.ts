@@ -14,17 +14,16 @@ export class UserRewardService {
   ) {}
 
   async requestReward(command: RequestRewardCommand): Promise<void> {
-    const { eventId, userEmail, rewardsToClaim } = command;
+    const { eventId, email, rewardsToClaim } = command;
     const reward = rewardsToClaim[0]; // 단일 요청이므로 첫 번째 하나만 처리
 
     const event = await this.eventRepository.findActiveById(eventId);
-    const userProgress =
-      await this.userEventRepository.findByUserEmail(userEmail);
+    const userProgress = await this.userEventRepository.findByUserEmail(email);
 
     if (!userProgress.isCompleted()) {
       const failure = RewardClaimHistory.failure(
         eventId,
-        userEmail,
+        email,
         reward.name,
         reward.amount,
         `이벤트 미 완료 `,
@@ -40,7 +39,7 @@ export class UserRewardService {
     if (!definedReward) {
       const failure = RewardClaimHistory.failure(
         eventId,
-        userEmail,
+        email,
         reward.name,
         reward.amount,
         '존재하지 않는 보상 이름입니다.',
@@ -53,7 +52,7 @@ export class UserRewardService {
     const alreadyClaimed =
       await this.rewardClaimHistoryRepository.findByEventAndUserSuccessOnly(
         eventId,
-        userEmail,
+        email,
       );
 
     const claimedAmount = alreadyClaimed
@@ -66,7 +65,7 @@ export class UserRewardService {
     if (reward.amount > remaining) {
       const failure = RewardClaimHistory.failure(
         eventId,
-        userEmail,
+        email,
         reward.name,
         reward.amount,
         `보상 수량 초과: 요청 ${reward.amount}, 남은 ${remaining}`,
@@ -80,7 +79,7 @@ export class UserRewardService {
     // 5. 정상 수령 처리
     const success = RewardClaimHistory.success(
       eventId,
-      userEmail,
+      email,
       reward.name,
       reward.amount,
     );
@@ -89,7 +88,7 @@ export class UserRewardService {
 
   async getAvailableRewards(
     eventId: string,
-    userEmail: string,
+    email: string,
   ): Promise<
     {
       name: string;
@@ -98,7 +97,7 @@ export class UserRewardService {
     }[]
   > {
     const userProgress =
-      await this.userEventRepository.findByUserEmailOrThrow(userEmail);
+      await this.userEventRepository.findByUserEmailOrThrow(email);
 
     if (!userProgress.isCompleted) {
       throw new BadRequestException(`이벤트 완료 신청을 먼저 진행해 주세요`);
@@ -107,7 +106,7 @@ export class UserRewardService {
     const histories =
       await this.rewardClaimHistoryRepository.findByEventAndUserSuccessOnly(
         eventId,
-        userEmail,
+        email,
       );
 
     return event.rewards.map((reward) => {

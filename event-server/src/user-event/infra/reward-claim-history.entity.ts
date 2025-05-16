@@ -7,7 +7,7 @@ export class RewardClaimHistoryEntity extends Document {
   eventId: string;
 
   @Prop({ required: true })
-  userEmail: string;
+  email: string;
 
   @Prop({ required: true })
   rewardName: string;

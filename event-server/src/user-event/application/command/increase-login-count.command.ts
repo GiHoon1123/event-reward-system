@@ -1,3 +1,3 @@
 export class IncreaseLoginCountCommand {
-  constructor(public readonly userEmail: string) {}
+  constructor(public readonly email: string) {}
 }

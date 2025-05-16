@@ -43,7 +43,6 @@ export class EventRepository {
         `이벤트가 존재하지 않습니다. (id: ${eventId})`,
       );
     }
-    console.log(entity.status !== 'ACTIVE');
     if (entity.status !== 'ACTIVE') {
       throw new InactiveEventException();
     }
@@ -84,7 +83,6 @@ export class EventRepository {
     eventId: string,
     status: 'ACTIVE' | 'INACTIVE',
   ): Promise<void> {
-    console.log('Updating status to:', status);
     await this.eventModel
       .updateOne({ _id: eventId }, { $set: { status } })
       .exec();

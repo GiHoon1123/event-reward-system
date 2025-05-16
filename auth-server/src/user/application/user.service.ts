@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Role, User } from '../domain/user';
+import { KafkaProducer } from '../infra/kafka/kafka.producer';
 import { UserRepository } from '../infra/user.repository';
 
 @Injectable()
@@ -14,6 +15,7 @@ export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
+    private readonly kafkaProducer: KafkaProducer,
   ) {}
 
   async signup(
@@ -52,6 +54,9 @@ export class UserService {
     });
 
     await this.userRepository.updateRefreshToken(user.id!, refreshToken);
+
+    await this.kafkaProducer.sendLoginEvent(email);
+
     return { accessToken, refreshToken };
   }
 

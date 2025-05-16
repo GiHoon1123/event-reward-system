@@ -1,7 +1,7 @@
 export class RewardClaimHistory {
   constructor(
     public readonly eventId: string,
-    public readonly userEmail: string,
+    public readonly email: string,
     public readonly rewardName: string,
     public readonly amount: number,
     public readonly status: 'SUCCESS' | 'FAILURE',
@@ -11,13 +11,13 @@ export class RewardClaimHistory {
 
   static success(
     eventId: string,
-    userEmail: string,
+    email: string,
     rewardName: string,
     amount: number,
   ): RewardClaimHistory {
     return new RewardClaimHistory(
       eventId,
-      userEmail,
+      email,
       rewardName,
       amount,
       'SUCCESS',
@@ -27,14 +27,14 @@ export class RewardClaimHistory {
 
   static failure(
     eventId: string,
-    userEmail: string,
+    email: string,
     rewardName: string,
     amount: number,
     reason: string,
   ): RewardClaimHistory {
     return new RewardClaimHistory(
       eventId,
-      userEmail,
+      email,
       rewardName,
       amount,
       'FAILURE',

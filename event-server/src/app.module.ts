@@ -6,7 +6,13 @@ import { UserEventModule } from './user-event/user-event.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath:
+        process.env.NODE_ENV === 'development'
+          ? '.env.development'
+          : '.env.production',
+    }),
     MongooseModule.forRoot(process.env.MONGO_URI),
     EventModule,
     UserEventModule,

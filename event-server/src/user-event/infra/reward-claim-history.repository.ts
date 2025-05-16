@@ -18,10 +18,10 @@ export class RewardClaimHistoryRepository {
   }
 
   async findByUser(
-    userEmail: string,
+    email: string,
     filters?: { eventId?: string; status?: 'SUCCESS' | 'FAILURE' },
   ): Promise<RewardClaimHistory[]> {
-    const query: FilterQuery<RewardClaimHistoryEntity> = { userEmail };
+    const query: FilterQuery<RewardClaimHistoryEntity> = { email };
     if (filters?.eventId) query.eventId = filters.eventId;
     if (filters?.status) query.status = filters.status;
 
@@ -48,11 +48,11 @@ export class RewardClaimHistoryRepository {
   }
 
   async findByUserAndEvent(
-    userEmail: string,
+    email: string,
     eventId: string,
   ): Promise<RewardClaimHistory[]> {
     const entities = await this.model
-      .find({ userEmail, eventId })
+      .find({ email, eventId })
       .sort({ claimedAt: -1 })
       .exec();
     return entities.map(RewardClaimHistoryMapper.toDomain);
@@ -60,21 +60,21 @@ export class RewardClaimHistoryRepository {
 
   async findByEventAndUserSuccessOnly(
     eventId: string,
-    userEmail: string,
+    email: string,
   ): Promise<RewardClaimHistory[]> {
     const entities = await this.model
-      .find({ eventId, userEmail, status: 'SUCCESS' })
+      .find({ eventId, email, status: 'SUCCESS' })
       .exec();
     return entities.map(RewardClaimHistoryMapper.toDomain);
   }
 
   async hasAlreadyClaimed(
-    userEmail: string,
+    email: string,
     eventId: string,
     rewardName: string,
   ): Promise<boolean> {
     const count = await this.model.countDocuments({
-      userEmail,
+      email,
       eventId,
       rewardName,
     });
@@ -82,11 +82,11 @@ export class RewardClaimHistoryRepository {
   }
 
   async findByUserWithPage(
-    userEmail: string,
+    email: string,
     page: number,
     limit: number,
   ): Promise<{ totalCount: number; items: RewardClaimHistory[] }> {
-    const query = { userEmail };
+    const query = { email };
 
     const [items, totalCount] = await Promise.all([
       this.model

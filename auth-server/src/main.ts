@@ -5,6 +5,8 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/exception/global/http-exception.filter';
 
 async function bootstrap() {
+  console.log('[ENV] TEST_VAR:', process.env.TEST_VAR);
+
   const app = await NestFactory.create(AppModule, {
     cors: true,
   });

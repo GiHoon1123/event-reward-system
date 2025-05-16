@@ -6,7 +6,7 @@ import { UserEventProgressEntity } from './user-event-progress.entity';
 export class UserEventMapper {
   static toEntity(domain: UserEventProgress): Partial<UserEventProgressEntity> {
     return {
-      userEmail: domain.userEmail,
+      email: domain.email,
       loginCount: domain.getLoginCount(),
       status: domain.getStatus(),
     };
@@ -14,7 +14,7 @@ export class UserEventMapper {
 
   static toDomain(entity: UserEventProgressEntity): UserEventProgress {
     return new UserEventProgress(
-      entity.userEmail,
+      entity.email,
       entity.loginCount,
       entity.status,
     );

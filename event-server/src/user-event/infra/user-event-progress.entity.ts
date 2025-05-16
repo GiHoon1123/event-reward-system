@@ -6,7 +6,7 @@ export type UserEventStatus = 'IN_PROGRESS' | 'COMPLETED';
 @Schema({ collection: 'user_event_progress', timestamps: true })
 export class UserEventProgressEntity extends Document {
   @Prop({ required: true, unique: true })
-  userEmail: string;
+  email: string;
 
   @Prop({ required: true, default: 0 })
   loginCount: number;

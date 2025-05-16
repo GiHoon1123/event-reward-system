@@ -5,7 +5,7 @@ export class RewardClaimHistoryMapper {
   static toEntity(history: RewardClaimHistory): Record<string, any> {
     return {
       eventId: history.eventId,
-      userEmail: history.userEmail,
+      email: history.email,
       rewardName: history.rewardName,
       amount: history.amount,
       status: history.status,
@@ -17,7 +17,7 @@ export class RewardClaimHistoryMapper {
   static toDomain(entity: RewardClaimHistoryEntity): RewardClaimHistory {
     return new RewardClaimHistory(
       entity.eventId,
-      entity.userEmail,
+      entity.email,
       entity.rewardName,
       entity.amount,
       entity.status,

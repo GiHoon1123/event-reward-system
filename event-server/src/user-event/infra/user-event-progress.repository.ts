@@ -13,12 +13,12 @@ export class UserEventRepository {
   ) {}
 
   async findByUserEmail(email: string): Promise<UserEventProgress> {
-    const found = await this.userEventModel.findOne({ userEmail: email });
+    const found = await this.userEventModel.findOne({ email: email });
     return found ? UserEventMapper.toDomain(found) : null;
   }
 
   async findByUserEmailOrThrow(email: string): Promise<UserEventProgress> {
-    const found = await this.userEventModel.findOne({ userEmail: email });
+    const found = await this.userEventModel.findOne({ email: email });
     if (!found) {
       throw new NotFoundException(
         `해당 유저는 아직 이벤트에 참여하지 않았습니다. 먼저 로그인하여 참여를 시작해 주세요. (email: ${email})`,
@@ -30,7 +30,7 @@ export class UserEventRepository {
   async save(progress: UserEventProgress): Promise<void> {
     const update = UserEventMapper.toEntity(progress);
     await this.userEventModel.updateOne(
-      { userEmail: progress.userEmail },
+      { email: progress.email },
       { $set: update },
       { upsert: true },
     );

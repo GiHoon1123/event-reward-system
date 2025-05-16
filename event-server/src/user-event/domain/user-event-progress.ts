@@ -2,7 +2,7 @@ export type UserEventStatus = 'IN_PROGRESS' | 'COMPLETED';
 
 export class UserEventProgress {
   constructor(
-    public readonly userEmail: string,
+    public readonly email: string,
     private loginCount: number,
     private status: UserEventStatus = 'IN_PROGRESS',
   ) {}

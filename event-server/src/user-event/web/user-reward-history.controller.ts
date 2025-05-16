@@ -46,7 +46,7 @@ export class UserRewardHistoryController {
         data: [
           {
             eventId: '6826897559621cd773031bda',
-            userEmail: 'user@example.com',
+            email: 'user@example.com',
             rewardName: '코어 잼스톤',
             amount: 100,
             status: 'SUCCESS',
@@ -54,7 +54,7 @@ export class UserRewardHistoryController {
           },
           {
             eventId: '6826897559621cd773031bda',
-            userEmail: 'user@example.com',
+            email: 'user@example.com',
             rewardName: '코어 잼스톤',
             amount: 100,
             status: 'FAILURE',
@@ -112,7 +112,7 @@ export class UserRewardHistoryController {
         data: [
           {
             eventId: '6826897559621cd773031bda',
-            userEmail: 'user@example.com',
+            email: 'user@example.com',
             rewardName: '코어 잼스톤',
             amount: 100,
             status: 'SUCCESS',
@@ -120,7 +120,7 @@ export class UserRewardHistoryController {
           },
           {
             eventId: '6826897559621cd773031bda',
-            userEmail: 'user@example.com',
+            email: 'user@example.com',
             rewardName: '코어 잼스톤',
             amount: 100,
             status: 'FAILURE',
