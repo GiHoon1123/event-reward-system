@@ -29,7 +29,7 @@ export class EventService {
     await this.eventRepository.updateRewards(event.id, event.rewards);
   }
 
-  async findAllWithPage(
+  async getAllEventsWithPage(
     page: number,
     limit: number,
   ): Promise<{
@@ -41,6 +41,14 @@ export class EventService {
       this.eventRepository.count(),
     ]);
     return { totalCount, items };
+  }
+
+  async getRewardsByEventId(eventId: string): Promise<Event> {
+    return this.eventRepository.findById(eventId);
+  }
+
+  async getEventDetail(eventId: string) {
+    return await this.eventRepository.findById(eventId);
   }
 
   async changeStatus(

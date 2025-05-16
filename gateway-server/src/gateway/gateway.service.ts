@@ -31,8 +31,7 @@ export class GatewayService {
 
         if (user) {
           proxyReq.setHeader('x-user-email', user.email);
-          proxyReq.setHeader('x-user-role', user.role);
-          console.log(`[Gateway] 헤더 삽입: ${user.email} / ${user.role}`);
+          console.log(`[Gateway] 헤더 삽입: ${user.email}`);
         }
 
         // 3. body가 있을 경우 수동 전달

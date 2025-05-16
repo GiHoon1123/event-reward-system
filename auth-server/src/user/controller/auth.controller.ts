@@ -11,12 +11,12 @@ import { CreateUserRequestDto } from '../dto/create-user.request';
 import { LoginUserRequestDto } from '../dto/login-user.request';
 import { UserService } from '../service/user.service';
 
-@ApiTags('Auth')
+@ApiTags('User')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('user')
+  @Post('register/user')
   @ApiOperation({
     summary: '일반 유저 등록',
     description: '보상 요청이 가능한 일반 유저를 등록합니다.',
@@ -41,7 +41,7 @@ export class AuthController {
     return new CommonResponse(201, 'USER 등록 성공', null);
   }
 
-  @Post('operator')
+  @Post('register/operator')
   @ApiOperation({
     summary: '운영자 등록',
     description: '이벤트 및 보상을 등록할 수 있는 운영자를 등록합니다.',
@@ -66,7 +66,7 @@ export class AuthController {
     return new CommonResponse(201, 'OPERATOR 등록 성공', null);
   }
 
-  @Post('auditor')
+  @Post('register/auditor')
   @ApiOperation({
     summary: '감사자 등록',
     description: '보상 이력만 조회할 수 있는 감사자를 등록합니다.',
@@ -91,7 +91,7 @@ export class AuthController {
     return new CommonResponse(201, 'AUDITOR 등록 성공', null);
   }
 
-  @Post('admin')
+  @Post('register/admin')
   @ApiOperation({
     summary: '관리자 등록',
     description: '모든 기능에 접근 가능한 관리자를 등록합니다.',

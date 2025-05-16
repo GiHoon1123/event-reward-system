@@ -1,7 +1,6 @@
 import { All, Controller, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Public } from '../auth/public.decorator';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { GatewayService } from './gateway.service';
@@ -15,25 +14,25 @@ export class GatewayController {
   async login(@Req() req: Request, @Res() res: Response) {
     await this.gatewayService.forward(req, res);
   }
-
   // 인증 없이 열려 있는 경로들
-  @All('/auth/signup')
-  async signup(@Req() req: Request, @Res() res: Response) {
-    await this.gatewayService.forward(req, res);
-  }
-
-  // 인증 없이 열려 있는 경로들
-  @All('/tokens/refresh')
-  @Public()
+  @All('/auth/tokens/refresh')
   async refresh(@Req() req: Request, @Res() res: Response) {
     await this.gatewayService.forward(req, res);
   }
 
   // 역할 변경은 ADMIN만 허용
-  @All('/users/roles')
+  @All('auth/users/change-role')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   async changeRole(@Req() req: Request, @Res() res: Response) {
+    await this.gatewayService.forward(req, res);
+  }
+
+  // 등록은 ADMIN만 허용
+  @All('/auth/register')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async register(@Req() req: Request, @Res() res: Response) {
     await this.gatewayService.forward(req, res);
   }
 

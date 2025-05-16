@@ -4,6 +4,7 @@ import {
   ApiHeader,
   ApiOperation,
   ApiParam,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { CommonResponse } from 'src/common/dto/common-response.dto';
@@ -11,6 +12,7 @@ import { AddRewardsCommand } from 'src/event/application/command/add-rewards.com
 import { CreateEventCommand } from 'src/event/application/command/create-event.command';
 
 import { MongoIdValidationPipe } from 'src/common/pipe/mongo-id-validation.pipe';
+
 import { EventService } from '../application/service/\bevent.service';
 import { ChangeEventStatusRequestDto } from './dto/change-event-status.request';
 import { CreateEventRequestDto } from './dto/create-event.request';
@@ -29,15 +31,23 @@ export class AdminEventController {
   })
   @ApiOperation({
     summary: '이벤트 등록',
-    description: `
-**운영자 또는 관리자만 사용할 수 있습니다(ADMIN,OPERATOR)**  
+    description: `**운영자 또는 관리자만 사용할 수 있습니다(ADMIN,OPERATOR)**  
 이벤트 조건, 기간, 설명 등을 등록합니다.  
 
-- 현재 조건은 \`LOGIN_COUNT\`로 고정되어 있습니다.  
+- 현재 조건은 \\LOGIN_COUNT\\로 고정되어 있습니다.  
 - 보상은 별도 API로 등록합니다.  
 
-\`/events/:eventId/rewards\`를 참조하세요.
-    `,
+\\admin/events/:eventId/rewards\\를 참조하세요.`,
+  })
+  @ApiResponse({
+    status: 201,
+    description: '이벤트 등록 성공',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: '이벤트가 성공적으로 등록되었습니다.',
+      },
+    },
   })
   async createEvent(
     @Body() dto: CreateEventRequestDto,
@@ -62,7 +72,7 @@ export class AdminEventController {
   @ApiParam({
     name: 'eventId',
     description: '보상을 추가할 이벤트 ID',
-    example: '68253391f243bc0bb1165f0b',
+    example: '6826897559621cd773031bda',
   })
   @ApiBody({
     type: [RewardRequestDto],
@@ -92,11 +102,18 @@ export class AdminEventController {
   })
   @ApiOperation({
     summary: '이벤트 보상 등록',
-    description: `
-**해당 이벤트의 생성자만 호출할 수 있습니다.**  
-보상은 \`ITEM\` 타입으로 고정되어 있으며, 여러 개 등록 가능합니다.
-
-    `,
+    description: `**해당 이벤트의 생성자만 호출할 수 있습니다.**  
+보상은 \\ITEM\\ 타입으로 고정되어 있으며, 여러 개 등록 가능합니다.`,
+  })
+  @ApiResponse({
+    status: 201,
+    description: '보상 등록 성공',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: '보상이 성공적으로 등록되었습니다.',
+      },
+    },
   })
   async addRewards(
     @Param('eventId', MongoIdValidationPipe) eventId: string,
@@ -114,6 +131,11 @@ export class AdminEventController {
     description: 'Gateway에서 전달된 사용자 이메일 (예: admin@example.com)',
     required: true,
   })
+  @ApiParam({
+    name: 'eventId',
+    description: '상태를 변경할 이벤트 ID',
+    example: '6826897559621cd773031bda',
+  })
   @ApiBody({
     schema: {
       example: {
@@ -123,20 +145,27 @@ export class AdminEventController {
   })
   @ApiOperation({
     summary: '이벤트 상태 변경',
-    description: `
-이벤트 상태를 'ACTIVE' 또는 'INACTIVE'로 변경합니다.  
+    description: `이벤트 상태를 'ACTIVE' 또는 'INACTIVE'로 변경합니다.  
 **해당 이벤트의 생성자만 호출할 수 있습니다.**  
 상태값은 다음 두 가지만 허용됩니다:  
 - 'ACTIVE'  
-- 'INACTIVE'
-`,
+- 'INACTIVE'`,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '상태 변경 성공',
+    schema: {
+      example: {
+        statusCode: 200,
+        message: '이벤트 상태가 INACTIVE로 변경되었습니다.',
+      },
+    },
   })
   async changeStatus(
     @Param('eventId', MongoIdValidationPipe) eventId: string,
     @Headers('x-user-email') email: string,
-    @Body() dto: ChangeEventStatusRequestDto, // ✅ 여기 DTO 바디 적용
+    @Body() dto: ChangeEventStatusRequestDto,
   ): Promise<CommonResponse<void>> {
-    await this.eventService.changeStatus(eventId, dto.status, email);
     return new CommonResponse(
       200,
       `이벤트 상태가 ${dto.status}로 변경되었습니다.`,

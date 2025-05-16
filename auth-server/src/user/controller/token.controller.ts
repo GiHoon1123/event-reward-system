@@ -10,11 +10,11 @@ import { RefreshTokenRequestDto } from '../dto/refresh-token.request';
 import { UserService } from '../service/user.service';
 
 @ApiTags('Token')
-@Controller('tokens')
+@Controller('auth')
 export class TokenController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('refresh')
+  @Post('token/refresh')
   @ApiOperation({
     summary: '토큰 재발급',
     description: '리프레시 토큰을 사용해 새로운 액세스 토큰을 발급합니다.',

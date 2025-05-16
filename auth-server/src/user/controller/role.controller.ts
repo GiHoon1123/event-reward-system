@@ -5,11 +5,11 @@ import { UpdateUserRoleRequestDto } from '../dto/update-user-role.request';
 import { UserService } from '../service/user.service';
 
 @ApiTags('Role')
-@Controller('users/roles')
+@Controller('auth')
 export class RoleController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Post('users/change-role')
   @ApiOperation({
     summary: '역할 변경',
     description: '관리자가 유저의 역할을 변경합니다. (ADMIN 권한 필요)',
