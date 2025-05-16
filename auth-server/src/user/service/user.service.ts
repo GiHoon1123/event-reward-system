@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -21,7 +22,9 @@ export class UserService {
     role: Role = Role.USER,
   ): Promise<void> {
     const exists = await this.userRepository.existsByEmail(email);
-    if (exists) throw new Error('이미 등록된 이메일입니다.');
+    if (exists) {
+      throw new BadRequestException('이미 등록된 이메일입니다.');
+    }
     const hashed = await bcrypt.hash(password, 10);
     const user = User.of(email, hashed, role);
     await this.userRepository.save(user);

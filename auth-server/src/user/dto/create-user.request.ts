@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsEnum,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator';
-import { Role } from '../domain/user';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 
 export class CreateUserRequestDto {
   @ApiProperty({
@@ -23,14 +16,4 @@ export class CreateUserRequestDto {
   @IsString()
   @MinLength(8)
   password: string;
-
-  @ApiProperty({
-    example: 'USER',
-    required: false,
-    enum: Role,
-    description: '역할 (기본값: USER)',
-  })
-  @IsOptional()
-  @IsEnum(Role)
-  role?: Role;
 }

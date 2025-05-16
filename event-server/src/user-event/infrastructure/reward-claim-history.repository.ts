@@ -81,8 +81,6 @@ export class RewardClaimHistoryRepository {
     return count > 0;
   }
 
-  // reward-claim-history.repository.ts
-
   async findByUserWithPage(
     userEmail: string,
     page: number,

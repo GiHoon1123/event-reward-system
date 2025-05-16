@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Reward } from 'src/event/domain/reward';
 import { EventRepository } from 'src/event/infra/event.repository';
 import { Event } from '../../domain/event';
@@ -22,7 +22,6 @@ export class EventService {
 
   async addRewards(command: AddRewardsCommand): Promise<void> {
     const event = await this.eventRepository.findById(command.eventId);
-    if (!event) throw new NotFoundException('해당 이벤트를 찾을 수 없습니다.');
 
     const rewards = command.rewards.map((r) => Reward.create(r.name, r.amount));
 
@@ -42,12 +41,6 @@ export class EventService {
       this.eventRepository.count(),
     ]);
     return { totalCount, items };
-  }
-
-  async findById(id: string): Promise<Event> {
-    const event = await this.eventRepository.findById(id);
-
-    return event;
   }
 
   async changeStatus(
