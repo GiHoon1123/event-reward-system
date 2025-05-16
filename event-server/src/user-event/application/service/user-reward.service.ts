@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { EventRepository } from 'src/event/infra/event.repository';
 import { RewardClaimHistory } from 'src/user-event/domain/reward-claim-history';
-import { RewardClaimHistoryRepository } from 'src/user-event/infrastructure/reward-claim-history.repository';
-import { UserEventRepository } from 'src/user-event/infrastructure/user-event-progress.repository';
+import { RewardClaimHistoryRepository } from 'src/user-event/infra/reward-claim-history.repository';
+import { UserEventRepository } from 'src/user-event/infra/user-event-progress.repository';
 import { RequestRewardCommand } from '../command/request-reward.command';
 
 @Injectable()

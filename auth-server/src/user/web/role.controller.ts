@@ -1,8 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommonResponse } from 'src/common/dto/common-response.dto';
-import { UpdateUserRoleRequestDto } from '../dto/update-user-role.request';
-import { UserService } from '../service/user.service';
+import { UserService } from '../application/user.service';
+import { UpdateUserRoleRequestDto } from './dto/update-user-role.request';
 
 @ApiTags('Role')
 @Controller('auth')

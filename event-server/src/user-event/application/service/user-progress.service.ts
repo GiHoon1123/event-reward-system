@@ -3,7 +3,7 @@ import { EventRepository } from 'src/event/infra/event.repository';
 
 import { EventProgressInfo } from 'src/user-event/domain/event-progress-info';
 import { UserEventProgress } from 'src/user-event/domain/user-event-progress';
-import { UserEventRepository } from 'src/user-event/infrastructure/user-event-progress.repository';
+import { UserEventRepository } from 'src/user-event/infra/user-event-progress.repository';
 import { IncreaseLoginCountCommand } from '../command/increase-login-count.command';
 
 @Injectable()

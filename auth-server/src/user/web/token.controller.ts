@@ -1,8 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommonResponse } from 'src/common/dto/common-response.dto';
-import { RefreshTokenRequestDto } from '../dto/refresh-token.request';
-import { UserService } from '../service/user.service';
+import { UserService } from '../application/user.service';
+import { RefreshTokenRequestDto } from './dto/refresh-token.request';
 
 @ApiTags('Token')
 @Controller('auth')

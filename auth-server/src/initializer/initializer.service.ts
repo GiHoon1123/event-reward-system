@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UserService } from 'src/user/service/user.service';
+import { UserService } from 'src/user/application/user.service';
 
 @Injectable()
 export class InitializerService implements OnModuleInit {

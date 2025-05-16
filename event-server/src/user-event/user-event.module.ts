@@ -6,13 +6,13 @@ import { UserRewardService } from './application/service/user-reward.service';
 import {
   RewardClaimHistoryEntity,
   RewardClaimHistorySchema,
-} from './infrastructure/reward-claim-history.entity';
-import { RewardClaimHistoryRepository } from './infrastructure/reward-claim-history.repository';
+} from './infra/reward-claim-history.entity';
+import { RewardClaimHistoryRepository } from './infra/reward-claim-history.repository';
 import {
   UserEventProgressEntity,
   UserEventProgressEntitySchema,
-} from './infrastructure/user-event-progress.entity';
-import { UserEventRepository } from './infrastructure/user-event-progress.repository';
+} from './infra/user-event-progress.entity';
+import { UserEventRepository } from './infra/user-event-progress.repository';
 import { UserProgressController } from './web/user-progress.controller';
 import { UserRewardHistoryController } from './web/user-reward-history.controller';
 import { UserRewardController } from './web/user-reward.controller';
