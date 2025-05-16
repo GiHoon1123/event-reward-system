@@ -21,6 +21,9 @@ export class RewardClaimHistoryEntity extends Document {
   @Prop({ default: null })
   reason?: string;
 
+  @Prop({ required: true })
+  requestId: string;
+
   @Prop({ default: Date.now })
   claimedAt: Date;
 }
@@ -29,5 +32,7 @@ export const RewardClaimHistorySchema = SchemaFactory.createForClass(
   RewardClaimHistoryEntity,
 );
 
+// RewardClaimHistorySchema.index({ email: 1 });
+RewardClaimHistorySchema.index({ requestId: 1 }, { unique: true });
 RewardClaimHistorySchema.set('versionKey', false);
 RewardClaimHistorySchema.set('toJSON', { virtuals: true });

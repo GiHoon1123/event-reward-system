@@ -13,7 +13,7 @@ import {
   UserEventProgressEntity,
   UserEventProgressEntitySchema,
 } from './infra/user-event-progress.entity';
-import { UserEventRepository } from './infra/user-event-progress.repository';
+import { UserEventProgressRepository } from './infra/user-event-progress.repository';
 import { UserProgressController } from './web/user-progress.controller';
 import { UserRewardHistoryController } from './web/user-reward-history.controller';
 import { UserRewardController } from './web/user-reward.controller';
@@ -39,7 +39,7 @@ import { UserRewardController } from './web/user-reward.controller';
     LoginEventConsumer,
   ],
   providers: [
-    UserEventRepository,
+    UserEventProgressRepository,
     RewardClaimHistoryRepository,
     UserProgressService,
     UserRewardService,

@@ -3,20 +3,21 @@ import { EventRepository } from 'src/event/infra/event.repository';
 
 import { EventProgressInfo } from 'src/user-event/domain/event-progress-info';
 import { UserEventProgress } from 'src/user-event/domain/user-event-progress';
-import { UserEventRepository } from 'src/user-event/infra/user-event-progress.repository';
+import { UserEventProgressRepository } from 'src/user-event/infra/user-event-progress.repository';
 import { IncreaseLoginCountCommand } from '../command/increase-login-count.command';
 
 @Injectable()
 export class UserProgressService {
   constructor(
-    private readonly userEventRepository: UserEventRepository,
+    private readonly userEventProgressRepository: UserEventProgressRepository,
     private readonly eventRepository: EventRepository,
   ) {}
 
   async increaseLoginCount(command: IncreaseLoginCountCommand): Promise<void> {
     const { email } = command;
 
-    const existing = await this.userEventRepository.findByUserEmail(email);
+    const existing =
+      await this.userEventProgressRepository.findByUserEmail(email);
     const progress = existing
       ? existing
       : UserEventProgress.createInitial(email);
@@ -25,7 +26,7 @@ export class UserProgressService {
       progress.increase();
     }
 
-    await this.userEventRepository.save(progress);
+    await this.userEventProgressRepository.save(progress);
   }
 
   async getProgressInfo(
@@ -34,7 +35,7 @@ export class UserProgressService {
   ): Promise<EventProgressInfo> {
     const event = await this.eventRepository.findActiveById(eventId);
     const userProgress =
-      await this.userEventRepository.findByUserEmailOrThrow(email);
+      await this.userEventProgressRepository.findByUserEmailOrThrow(email);
     UserEventProgress.createInitial(email);
     return new EventProgressInfo(
       eventId,
@@ -45,7 +46,8 @@ export class UserProgressService {
 
   async markAsComplete(eventId: string, email: string): Promise<void> {
     const event = await this.eventRepository.findActiveById(eventId);
-    const userProgress = await this.userEventRepository.findByUserEmail(email);
+    const userProgress =
+      await this.userEventProgressRepository.findByUserEmail(email);
 
     // 1. 조건 미달
     if (!userProgress || userProgress.getLoginCount() < event.condition.value) {
@@ -65,6 +67,6 @@ export class UserProgressService {
     }
 
     userProgress.markComplete();
-    await this.userEventRepository.save(userProgress);
+    await this.userEventProgressRepository.save(userProgress);
   }
 }

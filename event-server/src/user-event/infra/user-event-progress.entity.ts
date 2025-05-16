@@ -29,5 +29,6 @@ export const UserEventProgressEntitySchema = SchemaFactory.createForClass(
   UserEventProgressEntity,
 );
 
+UserEventProgressEntitySchema.index({ email: 1 }, { unique: true });
 UserEventProgressEntitySchema.set('versionKey', false);
 UserEventProgressEntitySchema.set('toJSON', { virtuals: true });

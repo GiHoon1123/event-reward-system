@@ -6,7 +6,7 @@ import { UserEventProgressEntity } from './user-event-progress.entity';
 import { UserEventMapper } from './user-event-progress.mapper';
 
 @Injectable()
-export class UserEventRepository {
+export class UserEventProgressRepository {
   constructor(
     @InjectModel(UserEventProgressEntity.name)
     private readonly userEventModel: Model<UserEventProgressEntity>,

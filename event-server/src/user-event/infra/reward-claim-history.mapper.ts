@@ -10,7 +10,8 @@ export class RewardClaimHistoryMapper {
       amount: history.amount,
       status: history.status,
       claimedAt: history.claimedAt,
-      ...(history.reason && { reason: history.reason }), // ✅ reason이 있을 경우에만 포함
+      requestId: history.requestId,
+      ...(history.reason && { reason: history.reason }),
     };
   }
 
@@ -22,6 +23,7 @@ export class RewardClaimHistoryMapper {
       entity.amount,
       entity.status,
       entity.claimedAt,
+      entity.requestId,
       entity.reason ?? undefined,
     );
   }

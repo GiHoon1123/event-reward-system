@@ -36,6 +36,7 @@ export class UserRewardController {
       default: {
         summary: '보상 요청 예시',
         value: {
+          requestId: '41b63bb2-4b82-417e-a731-0bbf35d2cd17',
           name: '코어 잼스톤',
           amount: 100,
         },
@@ -66,14 +67,16 @@ export class UserRewardController {
     @Headers('x-user-email') email: string,
     @Body() rewards: ClaimRewardRequestDto,
   ): Promise<CommonResponse<void>> {
-    const command = new RequestRewardCommand(eventId, email, [
+    const command = new RequestRewardCommand(
+      eventId,
+      email,
+      rewards.requestId,
       {
-        type: 'ITEM',
+        type: 'ITEM', // 현재 ITEM 고정이라면
         name: rewards.name,
         amount: rewards.amount,
       },
-    ]);
-
+    );
     await this.userRewardService.requestReward(command);
 
     return new CommonResponse(201, '보상 요청이 성공 되었습니다.');

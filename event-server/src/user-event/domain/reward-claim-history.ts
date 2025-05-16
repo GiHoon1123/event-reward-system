@@ -6,6 +6,7 @@ export class RewardClaimHistory {
     public readonly amount: number,
     public readonly status: 'SUCCESS' | 'FAILURE',
     public readonly claimedAt: Date,
+    public readonly requestId: string,
     public readonly reason?: string,
   ) {}
 
@@ -14,6 +15,7 @@ export class RewardClaimHistory {
     email: string,
     rewardName: string,
     amount: number,
+    requestId: string,
   ): RewardClaimHistory {
     return new RewardClaimHistory(
       eventId,
@@ -22,6 +24,7 @@ export class RewardClaimHistory {
       amount,
       'SUCCESS',
       new Date(),
+      requestId,
     );
   }
 
@@ -31,6 +34,7 @@ export class RewardClaimHistory {
     rewardName: string,
     amount: number,
     reason: string,
+    requestId: string,
   ): RewardClaimHistory {
     return new RewardClaimHistory(
       eventId,
@@ -39,6 +43,7 @@ export class RewardClaimHistory {
       amount,
       'FAILURE',
       new Date(),
+      requestId,
       reason,
     );
   }
