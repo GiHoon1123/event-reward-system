@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { proxyRoutes } from 'config/proxy.config';
+import { getProxyRoutes } from 'config/proxy.config';
 import { NextFunction, Request, Response } from 'express';
-
 import {
   createProxyMiddleware,
   Options as HttpProxyOptions,
@@ -10,6 +9,8 @@ import {
 @Injectable()
 export class GatewayService {
   async forward(req: Request, res: Response, next?: NextFunction) {
+    const proxyRoutes = getProxyRoutes();
+
     // 1. 매칭되는 프록시 경로 찾기
     const matchedRoute = Object.keys(proxyRoutes).find((prefix) =>
       req.path.startsWith(prefix),
@@ -27,10 +28,11 @@ export class GatewayService {
 
       // 2. 요청 시작 시 사용자 정보 헤더로 전달
       onProxyReq: (proxyReq, req) => {
-        const user = (req as any).user; // JwtStrategy.validate()에서 넣은 값
+        const user = (req as any).user;
 
         if (user) {
           proxyReq.setHeader('x-user-email', user.email);
+          proxyReq.setHeader('x-user-role', user.role);
           console.log(`[Gateway] 헤더 삽입: ${user.email}`);
         }
 
@@ -47,7 +49,7 @@ export class GatewayService {
       },
     };
 
-    // 5. 실제 프록시 실행
+    // 4. 실제 프록시 실행
     const proxy = createProxyMiddleware(options);
     proxy(req, res, next);
   }

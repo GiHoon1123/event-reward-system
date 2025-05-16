@@ -13,7 +13,9 @@ export class KafkaProducer implements OnModuleInit {
       loginAt: new Date().toISOString(),
     };
 
-    this.kafkaClient.emit('login_event', payload);
+    this.kafkaClient.emit('login_event', {
+      value: JSON.stringify(payload),
+    });
     console.log('[KafkaProducer] login_event 발행됨:', payload);
   }
 

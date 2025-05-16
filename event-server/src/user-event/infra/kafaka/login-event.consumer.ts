@@ -13,10 +13,21 @@ interface LoginEventPayload {
 export class LoginEventConsumer {
   constructor(private readonly userProgressService: UserProgressService) {}
 
-  @MessagePattern('login_event') // ✅ Kafka 토픽 이름
+  @MessagePattern('login_event')
   async handleLoginEvent(@Payload() message: LoginEventPayload) {
-    console.log('[Consumer] 메시지 수신:', message);
-    const command = new IncreaseLoginCountCommand(message.email);
-    await this.userProgressService.increaseLoginCount(command);
+    try {
+      console.log('[Consumer] 수신 메시지:', message);
+
+      if (!message.email) {
+        throw new Error('email 누락됨');
+      }
+
+      const command = new IncreaseLoginCountCommand(message.email);
+      await this.userProgressService.increaseLoginCount(command);
+
+      console.log('[Consumer] 처리 완료:', message.email);
+    } catch (err) {
+      console.error('[Consumer] 처리 중 에러 발생:', err);
+    }
   }
 }

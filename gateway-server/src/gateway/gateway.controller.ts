@@ -11,11 +11,17 @@ import { GatewayService } from './gateway.service';
 export class GatewayController {
   constructor(private readonly gatewayService: GatewayService) {}
 
-  // 유저 등록은 ADMIN만 가능
+  // 인증 없이 열려 있는 경로들
+  @All('/auth/tokens/refresh')
+  async refresh(@Req() req: Request, @Res() res: Response) {
+    await this.gatewayService.forward(req, res);
+  }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  @All('/auth/register')
+  @All('/auth/register/*')
   async register(@Req() req: Request, @Res() res: Response) {
+    console.log('[DEBUG] user in req:', (req as any).user); // <- 여기 확인!
     await this.gatewayService.forward(req, res);
   }
 
@@ -26,15 +32,19 @@ export class GatewayController {
     await this.gatewayService.forward(req, res);
   }
 
-  // 인증 없이 열려 있는 경로들
-  @All('/auth/tokens/refresh')
-  async refresh(@Req() req: Request, @Res() res: Response) {
-    await this.gatewayService.forward(req, res);
+  //  관리자 전용 경로 (이벤트 생성, 이벤트 상태 변경, 보상 추가)
+  @UseGuards(JwtAuthGuard, DenyRolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @All('/admin/events')
+  async eventSet(@Req() req, @Res() res) {
+    return this.gatewayService.forward(req, res);
   }
 
-  // 인증 없이 열려 있는 경로들
-  @All('/auth/login')
-  async login(@Req() req: Request, @Res() res: Response) {
+  // 어드민용 전체 이력 조회
+  @All('events/rewards/history')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'AUDITOR')
+  async getAllHistory(@Req() req: Request, @Res() res: Response) {
     await this.gatewayService.forward(req, res);
   }
 
@@ -54,14 +64,6 @@ export class GatewayController {
     await this.gatewayService.forward(req, res);
   }
 
-  //  관리자 전용 경로 (이벤트 생성, 이벤트 상태 변경, 보상 추가)
-  @UseGuards(JwtAuthGuard, DenyRolesGuard)
-  @Roles('ADMIN', 'OPERATOR')
-  @All('/admin/events')
-  async eventSet(@Req() req, @Res() res) {
-    return this.gatewayService.forward(req, res);
-  }
-
   // user 전용 조회
   @UseGuards(JwtAuthGuard, DenyRolesGuard)
   @DenyRoles('AUDITOR') // 감사자는 접근 불가
@@ -70,17 +72,9 @@ export class GatewayController {
     await this.gatewayService.forward(req, res);
   }
 
-  // 어드민용 전체 이력 조회
-  @All('events/rewards/history')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'AUDITOR')
-  async getAllHistory(@Req() req: Request, @Res() res: Response) {
-    await this.gatewayService.forward(req, res);
-  }
-
+  @All(['/events', '/events/*']) // ✅ 둘 다 매칭
   @UseGuards(JwtAuthGuard, DenyRolesGuard)
   @DenyRoles('AUDITOR') // 감사자는 접근 불가
-  @All(['/events', '/events/:eventId'])
   async publicRead(@Req() req, @Res() res) {
     return this.gatewayService.forward(req, res);
   }

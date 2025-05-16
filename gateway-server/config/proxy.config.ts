@@ -1,19 +1,17 @@
+// config/proxy.config.ts
 import { Options } from 'http-proxy-middleware';
 
-const authTarget = process.env.AUTH_SERVER!;
-const eventTarget = process.env.EVENT_SERVER!;
-
-export const proxyRoutes: Record<string, Options> = {
+export const getProxyRoutes = (): Record<string, Options> => ({
   '/auth': {
-    target: authTarget,
+    target: process.env.AUTH_SERVER!,
     changeOrigin: true,
   },
   '/admin': {
-    target: authTarget,
+    target: process.env.AUTH_SERVER!,
     changeOrigin: true,
   },
   '/events': {
-    target: eventTarget,
+    target: process.env.EVENT_SERVER!,
     changeOrigin: true,
   },
-};
+});
