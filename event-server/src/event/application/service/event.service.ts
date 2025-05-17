@@ -38,17 +38,31 @@ export class EventService {
 
   async addRewards(command: AddRewardsCommand): Promise<void> {
     const event = await this.eventRepository.findActiveById(command.eventId);
-    console.log('event', event);
-    console.log('command', command);
-    if (event.createdBy != command.requestedBy) {
+
+    if (event.createdBy !== command.requestedBy) {
       throw new BadRequestException(
         `이벤트 상태 변경은 해당 이벤트를 등록한 유저만 가능합니다. (이벤트 등록 유저: ${event.createdBy})`,
       );
     }
 
-    const rewards = command.rewards.map((r) => Reward.create(r.name, r.amount));
+    // ✅ 기존 보상 이름 목록
+    const existingNames = new Set(event.rewards.map((r) => r.name));
 
+    // ✅ 중복된 이름 수집
+    const duplicatedNames = command.rewards
+      .map((r) => r.name)
+      .filter((name, index, self) => self.indexOf(name) === index) // 중복 제거
+      .filter((name) => existingNames.has(name));
+
+    if (duplicatedNames.length > 0) {
+      throw new BadRequestException(
+        `다음 보상 이름은 이미 등록되어 있습니다: ${duplicatedNames.join(', ')}`,
+      );
+    }
+
+    const rewards = command.rewards.map((r) => Reward.create(r.name, r.amount));
     event.addRewards(rewards, command.requestedBy);
+
     await this.eventRepository.updateRewards(event.id, event.rewards);
   }
 
