@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { EventRepository } from 'src/event/infra/event.repository';
 
-import { EventProgressInfo } from 'src/user-event/domain/event-progress-info';
-import { UserEventProgress } from 'src/user-event/domain/user-event-progress';
-import { UserEventProgressRepository } from 'src/user-event/infra/user-event-progress.repository';
+import { UserLoginEventProgress } from 'src/user-event/domain/user-login-event-progress';
+import { UserLoginEventProgressInfo } from 'src/user-event/domain/user-login-event-progress-info';
+import { UserLoginEventProgressRepository } from 'src/user-event/infra/user-login-event-progress.repository';
 import { IncreaseLoginCountCommand } from '../command/increase-login-count.command';
 
 @Injectable()
-export class UserProgressService {
+export class UserLoginEventProgressService {
   constructor(
-    private readonly userEventProgressRepository: UserEventProgressRepository,
+    private readonly userLoginEventProgressRepository: UserLoginEventProgressRepository,
     private readonly eventRepository: EventRepository,
   ) {}
 
@@ -17,27 +17,31 @@ export class UserProgressService {
     const { email } = command;
 
     const existing =
-      await this.userEventProgressRepository.findByUserEmail(email);
+      await this.userLoginEventProgressRepository.findByUserEmail(email);
     const progress = existing
       ? existing
-      : UserEventProgress.createInitial(email);
+      : UserLoginEventProgress.createInitial(email);
 
     if (existing) {
       progress.increase();
     }
 
-    await this.userEventProgressRepository.save(progress);
+    await this.userLoginEventProgressRepository.save(progress);
   }
 
   async getProgressInfo(
     eventId: string,
     email: string,
-  ): Promise<EventProgressInfo> {
+  ): Promise<UserLoginEventProgressInfo> {
     const event = await this.eventRepository.findActiveById(eventId);
-    const userProgress =
-      await this.userEventProgressRepository.findByUserEmailOrThrow(email);
-    UserEventProgress.createInitial(email);
-    return new EventProgressInfo(
+    let userProgress =
+      await this.userLoginEventProgressRepository.findByUserEmail(email);
+
+    if (!userProgress) {
+      userProgress = UserLoginEventProgress.createInitial(email);
+      await this.userLoginEventProgressRepository.save(userProgress);
+    }
+    return new UserLoginEventProgressInfo(
       eventId,
       userProgress.getLoginCount(),
       event.condition.value,
@@ -47,7 +51,7 @@ export class UserProgressService {
   async markAsComplete(eventId: string, email: string): Promise<void> {
     const event = await this.eventRepository.findActiveById(eventId);
     const userProgress =
-      await this.userEventProgressRepository.findByUserEmail(email);
+      await this.userLoginEventProgressRepository.findByUserEmail(email);
 
     // 1. 조건 미달
     if (!userProgress || userProgress.getLoginCount() < event.condition.value) {
@@ -67,6 +71,6 @@ export class UserProgressService {
     }
 
     userProgress.markComplete();
-    await this.userEventProgressRepository.save(userProgress);
+    await this.userLoginEventProgressRepository.save(userProgress);
   }
 }

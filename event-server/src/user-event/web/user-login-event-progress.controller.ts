@@ -9,12 +9,14 @@ import {
 import { CommonResponse } from 'src/common/dto/common-response.dto';
 import { MongoIdValidationPipe } from 'src/common/pipe/mongo-id-validation.pipe';
 import { IncreaseLoginCountCommand } from '../application/command/increase-login-count.command';
-import { UserProgressService } from '../application/service/user-progress.service';
+import { UserLoginEventProgressService } from '../application/service/user-login-event-progress.service';
 
 @ApiTags('Event-Progress')
 @Controller('events')
 export class UserProgressController {
-  constructor(private readonly userProgressService: UserProgressService) {}
+  constructor(
+    private readonly userLoginEventProgressService: UserLoginEventProgressService,
+  ) {}
 
   @Post('progress/users/login')
   @ApiHeader({
@@ -41,7 +43,7 @@ export class UserProgressController {
     @Headers('x-user-email') email: string,
   ): Promise<CommonResponse<void>> {
     const command = new IncreaseLoginCountCommand(email);
-    await this.userProgressService.increaseLoginCount(command);
+    await this.userLoginEventProgressService.increaseLoginCount(command);
     return new CommonResponse(
       201,
       '유저의 로그인 이벤트 진행도가 증가했습니다.',
@@ -96,7 +98,10 @@ export class UserProgressController {
       rate: number;
     }>
   > {
-    const info = await this.userProgressService.getProgressInfo(eventId, email);
+    const info = await this.userLoginEventProgressService.getProgressInfo(
+      eventId,
+      email,
+    );
 
     return new CommonResponse(200, '이벤트 진행도 조회 성공', {
       eventId: info.eventId,
@@ -139,7 +144,7 @@ export class UserProgressController {
     @Param('eventId', MongoIdValidationPipe) eventId: string,
     @Headers('x-user-email') email: string,
   ): Promise<CommonResponse<void>> {
-    await this.userProgressService.markAsComplete(eventId, email);
+    await this.userLoginEventProgressService.markAsComplete(eventId, email);
     return new CommonResponse(200, '이벤트가 완료 처리되었습니다.');
   }
 }

@@ -1,6 +1,6 @@
 export type UserEventStatus = 'IN_PROGRESS' | 'COMPLETED';
 
-export class UserEventProgress {
+export class UserLoginEventProgress {
   constructor(
     public readonly email: string,
     private loginCount: number,
@@ -27,7 +27,7 @@ export class UserEventProgress {
     return this.status === 'COMPLETED';
   }
 
-  static createInitial(email: string): UserEventProgress {
-    return new UserEventProgress(email, 0, 'IN_PROGRESS');
+  static createInitial(email: string): UserLoginEventProgress {
+    return new UserLoginEventProgress(email, 1, 'IN_PROGRESS');
   }
 }

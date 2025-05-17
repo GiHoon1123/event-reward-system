@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { Reward } from 'src/event/domain/reward';
 import { EventRepository } from 'src/event/infra/event.repository';
 import { Event } from '../../domain/event';
@@ -10,12 +14,23 @@ export class EventService {
   constructor(private readonly eventRepository: EventRepository) {}
 
   async createEvent(command: CreateEventCommand): Promise<string> {
+    const existingActiveEventOfType =
+      await this.eventRepository.findActiveByType(command.conditionType);
+
+    if (existingActiveEventOfType) {
+      throw new ConflictException(
+        `${command.conditionType} 타입의 이벤트는 이미 활성화되어 있습니다. 하나의 조건 타입에 대해 하나의 이벤트만 등록할 수 있습니다.`,
+      );
+    }
+
     const event = Event.of(
       command.title,
       command.description,
+      command.conditionType,
       command.conditionValue,
       command.createdBy,
     );
+
     const saved = await this.eventRepository.save(event);
     return saved.id;
   }

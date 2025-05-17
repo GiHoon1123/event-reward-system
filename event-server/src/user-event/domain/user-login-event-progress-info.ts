@@ -1,4 +1,4 @@
-export class EventProgressInfo {
+export class UserLoginEventProgressInfo {
   constructor(
     public readonly eventId: string,
     public readonly current: number,

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNumber, IsString, Min } from 'class-validator';
+import { IsDateString, IsIn, IsNumber, IsString, Min } from 'class-validator';
 
 export class CreateEventRequestDto {
   @ApiProperty({ example: '3회 로그인 이벤트' })
@@ -9,6 +9,17 @@ export class CreateEventRequestDto {
   @ApiProperty({ example: '3번 로그인하면 아이템을 드립니다.' })
   @IsString()
   description: string;
+
+  @ApiProperty({
+    example: 'LOGIN_COUNT',
+    description: '이벤트 유형 (현재는 LOGIN_COUNT만 지원)',
+    enum: ['LOGIN_COUNT'],
+  })
+  @IsString()
+  @IsIn(['LOGIN_COUNT'], {
+    message: 'conditionType은 LOGIN_COUNT만 가능합니다.',
+  })
+  conditionType: string;
 
   @ApiProperty({ example: 3, description: '이벤트 조건 값 (로그인 횟수)' })
   @IsNumber()

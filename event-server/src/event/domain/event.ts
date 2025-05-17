@@ -22,6 +22,7 @@ export class Event {
   static of(
     title: string,
     description: string,
+    conditionType: string,
     conditionValue: number,
     createdBy: string,
   ): Event {
@@ -29,7 +30,7 @@ export class Event {
       '',
       title,
       description,
-      { type: 'LOGIN_COUNT', value: conditionValue },
+      { type: conditionType as EventConditionType, value: conditionValue },
       'ACTIVE',
       [],
       createdBy,

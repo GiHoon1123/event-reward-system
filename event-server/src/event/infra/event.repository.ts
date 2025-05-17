@@ -35,6 +35,14 @@ export class EventRepository {
     return EventMapper.toDomain(entity);
   }
 
+  async findActiveByType(type: string): Promise<Event | null> {
+    const entity = await this.eventModel
+      .findOne({ 'condition.type': type, status: 'ACTIVE' })
+      .exec();
+
+    return entity ? EventMapper.toDomain(entity) : null;
+  }
+
   async findActiveById(eventId: string): Promise<Event> {
     const entity = await this.eventModel.findById(eventId);
 

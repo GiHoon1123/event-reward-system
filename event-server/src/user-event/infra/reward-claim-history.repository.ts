@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { RewardClaimHistory } from '../domain/reward-claim-history';
 import { RewardClaimHistoryEntity } from './reward-claim-history.entity';
 import { RewardClaimHistoryMapper } from './reward-claim-history.mapper';
@@ -17,34 +17,9 @@ export class RewardClaimHistoryRepository {
     await this.model.create(entity);
   }
 
-  async findByUser(
-    email: string,
-    filters?: { eventId?: string; status?: 'SUCCESS' | 'FAILURE' },
-  ): Promise<RewardClaimHistory[]> {
-    const query: FilterQuery<RewardClaimHistoryEntity> = { email };
-    if (filters?.eventId) query.eventId = filters.eventId;
-    if (filters?.status) query.status = filters.status;
-
-    const entities = await this.model
-      .find(query)
-      .sort({ claimedAt: -1 })
-      .exec();
-    return entities.map(RewardClaimHistoryMapper.toDomain);
-  }
-
-  async findAll(filters?: {
-    eventId?: string;
-    status?: 'SUCCESS' | 'FAILURE';
-  }): Promise<RewardClaimHistory[]> {
-    const query: FilterQuery<RewardClaimHistoryEntity> = {};
-    if (filters?.eventId) query.eventId = filters.eventId;
-    if (filters?.status) query.status = filters.status;
-
-    const entities = await this.model
-      .find(query)
-      .sort({ claimedAt: -1 })
-      .exec();
-    return entities.map(RewardClaimHistoryMapper.toDomain);
+  async findByRequestId(requestId: string): Promise<RewardClaimHistory | null> {
+    const entity = await this.model.findOne({ requestId }).exec();
+    return entity ? RewardClaimHistoryMapper.toDomain(entity) : null;
   }
 
   async findByUserAndEvent(
@@ -55,7 +30,7 @@ export class RewardClaimHistoryRepository {
       .find({ email, eventId })
       .sort({ claimedAt: -1 })
       .exec();
-    return entities.map(RewardClaimHistoryMapper.toDomain);
+    return entities ?? entities.map(RewardClaimHistoryMapper.toDomain);
   }
 
   async findByEventAndUserSuccessOnly(

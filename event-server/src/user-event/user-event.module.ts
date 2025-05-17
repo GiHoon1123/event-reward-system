@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EventModule } from 'src/event/event.module';
-import { UserProgressService } from './application/service/user-progress.service';
-import { UserRewardService } from './application/service/user-reward.service';
+import { UserLoginEventProgressService } from './application/service/user-login-event-progress.service';
+import { UserLoginEventRewardService } from './application/service/user-login-event-reward.service';
 import { LoginEventConsumer } from './infra/kafaka/login-event.consumer';
 import {
   RewardClaimHistoryEntity,
@@ -10,11 +10,11 @@ import {
 } from './infra/reward-claim-history.entity';
 import { RewardClaimHistoryRepository } from './infra/reward-claim-history.repository';
 import {
-  UserEventProgressEntity,
-  UserEventProgressEntitySchema,
-} from './infra/user-event-progress.entity';
-import { UserEventProgressRepository } from './infra/user-event-progress.repository';
-import { UserProgressController } from './web/user-progress.controller';
+  UserLoginEventProgressEntity,
+  UserLoginEventProgressEntitySchema,
+} from './infra/user-login-event-progress.entity';
+import { UserLoginEventProgressRepository } from './infra/user-login-event-progress.repository';
+import { UserProgressController } from './web/user-login-event-progress.controller';
 import { UserRewardHistoryController } from './web/user-reward-history.controller';
 import { UserRewardController } from './web/user-reward.controller';
 
@@ -22,8 +22,8 @@ import { UserRewardController } from './web/user-reward.controller';
   imports: [
     MongooseModule.forFeature([
       {
-        name: UserEventProgressEntity.name,
-        schema: UserEventProgressEntitySchema,
+        name: UserLoginEventProgressEntity.name,
+        schema: UserLoginEventProgressEntitySchema,
       },
       {
         name: RewardClaimHistoryEntity.name,
@@ -39,10 +39,10 @@ import { UserRewardController } from './web/user-reward.controller';
     LoginEventConsumer,
   ],
   providers: [
-    UserEventProgressRepository,
+    UserLoginEventProgressRepository,
     RewardClaimHistoryRepository,
-    UserProgressService,
-    UserRewardService,
+    UserLoginEventProgressService,
+    UserLoginEventRewardService,
   ],
   exports: [],
 })

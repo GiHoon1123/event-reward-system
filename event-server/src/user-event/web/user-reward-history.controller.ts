@@ -10,13 +10,15 @@ import {
   PaginatedResponse,
   PaginationMeta,
 } from 'src/common/dto/paginated-response.dto';
-import { UserRewardService } from '../application/service/user-reward.service';
+import { UserLoginEventRewardService } from '../application/service/user-login-event-reward.service';
 import { RewardClaimHistory } from '../domain/reward-claim-history';
 
 @ApiTags('Reward')
 @Controller('events')
 export class UserRewardHistoryController {
-  constructor(private readonly userRewardService: UserRewardService) {}
+  constructor(
+    private readonly userLoginEventRewardService: UserLoginEventRewardService,
+  ) {}
   @Get('rewards/history/me')
   @ApiOperation({ summary: '유저 보상 요청 이력 조회' })
   @ApiHeader({
@@ -79,7 +81,7 @@ export class UserRewardHistoryController {
     @Query('limit') limit = 20,
   ): Promise<PaginatedResponse<RewardClaimHistory>> {
     const { totalCount, items } =
-      await this.userRewardService.getUserHistoriesWithPage(
+      await this.userLoginEventRewardService.getUserHistoriesWithPage(
         email,
         Number(page),
         Number(limit),
@@ -144,7 +146,7 @@ export class UserRewardHistoryController {
     @Query('limit') limit = 20,
   ): Promise<PaginatedResponse<RewardClaimHistory>> {
     const { totalCount, items } =
-      await this.userRewardService.getHistoriesWithPage(
+      await this.userLoginEventRewardService.getHistoriesWithPage(
         Number(page),
         Number(limit),
       );

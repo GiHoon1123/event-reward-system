@@ -6,20 +6,29 @@ import {
 import { EventRepository } from 'src/event/infra/event.repository';
 import { RewardClaimHistory } from 'src/user-event/domain/reward-claim-history';
 import { RewardClaimHistoryRepository } from 'src/user-event/infra/reward-claim-history.repository';
-import { UserEventProgressRepository } from 'src/user-event/infra/user-event-progress.repository';
+import { UserLoginEventProgressRepository } from 'src/user-event/infra/user-login-event-progress.repository';
 import { RequestRewardCommand } from '../command/request-reward.command';
 
 @Injectable()
-export class UserRewardService {
+export class UserLoginEventRewardService {
   constructor(
     private readonly eventRepository: EventRepository,
-    private readonly userEventProgressRepository: UserEventProgressRepository,
+    private readonly userLoginEventProgressRepository: UserLoginEventProgressRepository,
     private readonly rewardClaimHistoryRepository: RewardClaimHistoryRepository,
   ) {}
 
   async requestReward(command: RequestRewardCommand): Promise<void> {
     const { eventId, email, rewardToClaim, requestId } = command;
     const reward = rewardToClaim; // 단일 요청 기준
+
+    const isDuplicated =
+      await this.rewardClaimHistoryRepository.findByRequestId(
+        command.requestId,
+      );
+
+    if (isDuplicated) {
+      throw new ConflictException('이미 처리된 요청입니다.');
+    }
 
     const event = await this.eventRepository.findActiveById(eventId);
 
@@ -40,7 +49,7 @@ export class UserRewardService {
 
     // 2. 진행도 확인
     const userProgress =
-      await this.userEventProgressRepository.findByUserEmail(email);
+      await this.userLoginEventProgressRepository.findByUserEmail(email);
     if (!userProgress.isCompleted()) {
       const failure = RewardClaimHistory.failure(
         eventId,
@@ -92,14 +101,7 @@ export class UserRewardService {
       requestId,
     );
 
-    try {
-      await this.rewardClaimHistoryRepository.save(success);
-    } catch (err: any) {
-      if (err.code === 11000) {
-        throw new ConflictException('이미 처리된 요청입니다.');
-      }
-      throw err;
-    }
+    await this.rewardClaimHistoryRepository.save(success);
   }
 
   async getAvailableRewards(
@@ -113,9 +115,9 @@ export class UserRewardService {
     }[]
   > {
     const userProgress =
-      await this.userEventProgressRepository.findByUserEmailOrThrow(email);
+      await this.userLoginEventProgressRepository.findByUserEmailOrThrow(email);
 
-    if (!userProgress.isCompleted) {
+    if (!userProgress.isCompleted()) {
       throw new BadRequestException(`이벤트 완료 신청을 먼저 진행해 주세요`);
     }
     const event = await this.eventRepository.findActiveById(eventId);

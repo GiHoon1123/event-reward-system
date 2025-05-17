@@ -26,6 +26,12 @@ export class RewardClaimHistoryEntity extends Document {
 
   @Prop({ default: Date.now })
   claimedAt: Date;
+
+  @Prop()
+  createdAt: Date;
+
+  @Prop()
+  updatedAt: Date;
 }
 
 export const RewardClaimHistorySchema = SchemaFactory.createForClass(

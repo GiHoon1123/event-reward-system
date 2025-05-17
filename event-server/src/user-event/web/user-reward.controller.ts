@@ -10,13 +10,15 @@ import {
 import { CommonResponse } from 'src/common/dto/common-response.dto';
 import { MongoIdValidationPipe } from 'src/common/pipe/mongo-id-validation.pipe';
 import { RequestRewardCommand } from '../application/command/request-reward.command';
-import { UserRewardService } from '../application/service/user-reward.service';
+import { UserLoginEventRewardService } from '../application/service/user-login-event-reward.service';
 import { ClaimRewardRequestDto } from './dto/claim-reward.request';
 
 @ApiTags('User-Event')
 @Controller('events')
 export class UserRewardController {
-  constructor(private readonly userRewardService: UserRewardService) {}
+  constructor(
+    private readonly userLoginEventRewardService: UserLoginEventRewardService,
+  ) {}
 
   @Post('rewards/users/:eventId')
   @ApiHeader({
@@ -77,7 +79,7 @@ export class UserRewardController {
         amount: rewards.amount,
       },
     );
-    await this.userRewardService.requestReward(command);
+    await this.userLoginEventRewardService.requestReward(command);
 
     return new CommonResponse(201, '보상 요청이 성공 되었습니다.');
   }
@@ -137,7 +139,7 @@ export class UserRewardController {
       }[]
     >
   > {
-    const result = await this.userRewardService.getAvailableRewards(
+    const result = await this.userLoginEventRewardService.getAvailableRewards(
       eventId,
       email,
     );

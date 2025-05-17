@@ -3,8 +3,8 @@ import { Document } from 'mongoose';
 
 export type UserEventStatus = 'IN_PROGRESS' | 'COMPLETED';
 
-@Schema({ collection: 'user_event_progress', timestamps: true })
-export class UserEventProgressEntity extends Document {
+@Schema({ collection: 'user_login_event_progress', timestamps: true })
+export class UserLoginEventProgressEntity extends Document {
   @Prop({ required: true, unique: true })
   email: string;
 
@@ -25,10 +25,11 @@ export class UserEventProgressEntity extends Document {
   updatedAt: Date;
 }
 
-export const UserEventProgressEntitySchema = SchemaFactory.createForClass(
-  UserEventProgressEntity,
+export const UserLoginEventProgressEntitySchema = SchemaFactory.createForClass(
+  UserLoginEventProgressEntity,
 );
 
-UserEventProgressEntitySchema.index({ email: 1 }, { unique: true });
-UserEventProgressEntitySchema.set('versionKey', false);
-UserEventProgressEntitySchema.set('toJSON', { virtuals: true });
+UserLoginEventProgressEntitySchema.index({ email: 1 }, { unique: true });
+
+UserLoginEventProgressEntitySchema.set('versionKey', false);
+UserLoginEventProgressEntitySchema.set('toJSON', { virtuals: true });

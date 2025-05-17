@@ -2,7 +2,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { IncreaseLoginCountCommand } from 'src/user-event/application/command/increase-login-count.command';
-import { UserProgressService } from 'src/user-event/application/service/user-progress.service';
+import { UserLoginEventProgressService } from 'src/user-event/application/service/user-login-event-progress.service';
 
 interface LoginEventPayload {
   email: string;
@@ -11,7 +11,9 @@ interface LoginEventPayload {
 
 @Controller()
 export class LoginEventConsumer {
-  constructor(private readonly userProgressService: UserProgressService) {}
+  constructor(
+    private readonly userLoginEventProgressService: UserLoginEventProgressService,
+  ) {}
 
   @MessagePattern('login_event')
   async handleLoginEvent(@Payload() message: LoginEventPayload) {
@@ -23,7 +25,7 @@ export class LoginEventConsumer {
       }
 
       const command = new IncreaseLoginCountCommand(message.email);
-      await this.userProgressService.increaseLoginCount(command);
+      await this.userLoginEventProgressService.increaseLoginCount(command);
 
       console.log('[Consumer] 처리 완료:', message.email);
     } catch (err) {

@@ -34,10 +34,8 @@ export class AdminEventController {
     description: `**운영자 또는 관리자만 사용할 수 있습니다(ADMIN,OPERATOR)**  
 이벤트 조건, 기간, 설명 등을 등록합니다.  
 
-- 현재 조건은 \\LOGIN_COUNT\\로 고정되어 있습니다.  
-- 보상은 별도 API로 등록합니다.  
-
-\\admin/events/:eventId/rewards\\를 참조하세요.`,
+- 현재 조건은 LOGIN_COUNT 로 고정되어 있습니다.  
+- 보상은 별도 API로 등록합니다. (admin/events/:eventId/rewards 를 참조하세요.`,
   })
   @ApiResponse({
     status: 201,
@@ -56,6 +54,7 @@ export class AdminEventController {
     const command = new CreateEventCommand(
       dto.title,
       dto.description,
+      dto.conditionType,
       dto.conditionValue,
       email,
     );
@@ -103,7 +102,7 @@ export class AdminEventController {
   @ApiOperation({
     summary: '이벤트 보상 등록',
     description: `**해당 이벤트의 생성자만 호출할 수 있습니다.**  
-보상은 \\ITEM\\ 타입으로 고정되어 있으며, 여러 개 등록 가능합니다.`,
+보상은 ITEM 타입으로 고정되어 있으며, 여러 개 등록 가능합니다.`,
   })
   @ApiResponse({
     status: 201,
