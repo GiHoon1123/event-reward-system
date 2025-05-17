@@ -8,35 +8,32 @@ describe('DenyRolesGuard', () => {
     guard = new DenyRolesGuard();
   });
 
-  const createMockContext = (roles?: string[]): ExecutionContext =>
+  const createMockContext = (user?: any): ExecutionContext =>
     ({
       switchToHttp: () => ({
-        getRequest: () => ({
-          user: { roles }, // ✅ 배열로 주입
-        }),
+        getRequest: () => ({ user }),
       }),
-    }) as unknown as ExecutionContext;
+    }) as ExecutionContext;
 
-  it('AUDITOR 역할이면 ForbiddenException을 던져야 한다', () => {
-    const context = createMockContext(['AUDITOR']);
+  it('AUDITOR 역할이면 ForbiddenException 발생', () => {
+    const context = createMockContext({ roles: ['AUDITOR'] });
 
-    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+    expect(() => guard.canActivate(context)).toThrowError(
+      new ForbiddenException('AUDITOR 역할은 이 리소스에 접근할 수 없습니다.'),
+    );
   });
 
   it('USER 역할이면 true를 반환해야 한다', () => {
-    const context = createMockContext(['USER']);
-    const result = guard.canActivate(context);
-    expect(result).toBe(true);
+    const context = createMockContext({ roles: ['USER'] });
+
+    expect(guard.canActivate(context)).toBe(true);
   });
 
-  it('user가 없는 경우에도 true를 반환해야 한다', () => {
-    const context = {
-      switchToHttp: () => ({
-        getRequest: () => ({}), // user 없음
-      }),
-    } as unknown as ExecutionContext;
+  it('user 또는 roles가 없는 경우 ForbiddenException 발생 (기본 메시지)', () => {
+    const context = createMockContext(undefined);
 
-    const result = guard.canActivate(context);
-    expect(result).toBe(true);
+    expect(() => guard.canActivate(context)).toThrowError(
+      new ForbiddenException('접근 권한이 없습니다.'),
+    );
   });
 });

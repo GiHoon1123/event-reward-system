@@ -15,7 +15,7 @@ describe('getProxyRoutes', () => {
         changeOrigin: true,
       },
       '/admin': {
-        target: 'http://auth.example.com',
+        target: 'http://event.example.com',
         changeOrigin: true,
       },
       '/events': {

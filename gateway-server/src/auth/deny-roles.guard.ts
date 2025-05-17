@@ -17,6 +17,10 @@ export class DenyRolesGuard implements CanActivate {
       );
     }
 
+    if (!user || !user.roles) {
+      throw new ForbiddenException('접근 권한이 없습니다.');
+    }
+
     return true;
   }
 }

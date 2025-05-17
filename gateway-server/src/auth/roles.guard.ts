@@ -21,12 +21,14 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
     console.log('user', user);
 
-    if (
-      !user ||
-      !user.roles ||
-      !requiredRoles.some((role) => user.roles.includes(role))
-    ) {
-      throw new ForbiddenException('접근 권한이 없습니다.');
+    const hasRequiredRole =
+      user?.roles && requiredRoles.some((role) => user.roles.includes(role));
+
+    if (!user || !hasRequiredRole) {
+      const roleMessage = user?.role
+        ? `${user.role} 역할은 이 리소스에 접근할 수 없습니다.`
+        : '접근 권한이 없습니다.';
+      throw new ForbiddenException(roleMessage);
     }
 
     return true;

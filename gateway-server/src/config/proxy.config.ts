@@ -7,7 +7,7 @@ export const getProxyRoutes = (): Record<string, Options> => ({
     changeOrigin: true,
   },
   '/admin': {
-    target: process.env.AUTH_SERVER!,
+    target: process.env.EVENT_SERVER!,
     changeOrigin: true,
   },
   '/events': {
