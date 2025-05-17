@@ -1,4 +1,4 @@
-import { InvalidRoleException } from 'src/common/exception/custom/nvalid-role.exception';
+import { InvalidRoleException } from 'src/common/exception/custom/invalid-role.exception';
 
 export enum Role {
   USER = 'USER',

@@ -22,4 +22,9 @@ export class KafkaProducer implements OnModuleInit {
   async onModuleInit() {
     await this.kafkaClient.connect();
   }
+
+  async onModuleDestroy() {
+    await this.kafkaClient.close();
+    console.log('[KafkaProducer] Kafka 연결 종료됨');
+  }
 }

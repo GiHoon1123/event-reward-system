@@ -110,7 +110,7 @@ export class AuthController {
     @Body() dto: CreateUserRequestDto,
   ): Promise<CommonResponse<null>> {
     await this.userService.signup(dto.email, dto.password, Role.AUDITOR);
-    return new CommonResponse(201, 'AUDITOR 등록 성공', null);
+    return new CommonResponse(201, 'AUDITOR 등록 성공');
   }
 
   @Post('register/admin')
@@ -144,7 +144,7 @@ export class AuthController {
     @Body() dto: CreateUserRequestDto,
   ): Promise<CommonResponse<null>> {
     await this.userService.signup(dto.email, dto.password, Role.ADMIN);
-    return new CommonResponse(201, 'ADMIN 등록 성공', null);
+    return new CommonResponse(201, 'ADMIN 등록 성공');
   }
 
   @Post('login')

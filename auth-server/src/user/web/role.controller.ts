@@ -12,7 +12,8 @@ export class RoleController {
   @Post('users/change-role')
   @ApiOperation({
     summary: '역할 변경',
-    description: '관리자가 유저의 역할을 변경합니다. (ADMIN 권한 필요)',
+    description:
+      '관리자가 유저의 역할을 변경합니다. ADMIN 권한이 필요하며 USER, OPERATOR, AUDITOR, ADMIN 중 하나로 변경할 수 있습니다.',
   })
   @ApiBody({ type: UpdateUserRoleRequestDto })
   @ApiResponse({

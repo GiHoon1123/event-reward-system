@@ -4,7 +4,7 @@ import { Role } from '../domain/user';
 
 @Schema({ collection: 'users' })
 export class UserEntity {
-  _id: Types.ObjectId; // ✅ 명시적으로 추가
+  _id: Types.ObjectId;
 
   @Prop({ required: true, unique: true })
   email: string;
