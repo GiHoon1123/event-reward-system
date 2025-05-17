@@ -45,13 +45,11 @@ export class EventService {
       );
     }
 
-    // ✅ 기존 보상 이름 목록
     const existingNames = new Set(event.rewards.map((r) => r.name));
 
-    // ✅ 중복된 이름 수집
     const duplicatedNames = command.rewards
       .map((r) => r.name)
-      .filter((name, index, self) => self.indexOf(name) === index) // 중복 제거
+      .filter((name, index, self) => self.indexOf(name) === index)
       .filter((name) => existingNames.has(name));
 
     if (duplicatedNames.length > 0) {
