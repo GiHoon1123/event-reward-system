@@ -21,7 +21,7 @@ export class EventService {
   }
 
   async addRewards(command: AddRewardsCommand): Promise<void> {
-    const event = await this.eventRepository.findById(command.eventId);
+    const event = await this.eventRepository.findActiveById(command.eventId);
 
     const rewards = command.rewards.map((r) => Reward.create(r.name, r.amount));
 

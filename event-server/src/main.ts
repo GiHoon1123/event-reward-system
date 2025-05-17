@@ -1,6 +1,5 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/exception/global/http-exception.filter';
@@ -10,19 +9,19 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  // ✅ Kafka Consumer 연결
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.KAFKA,
-    options: {
-      client: {
-        clientId: 'event-server',
-        brokers: [process.env.KAFKA_BROKER],
-      },
-      consumer: {
-        groupId: 'user-event-group',
-      },
-    },
-  });
+  // Kafka Consumer 연결
+  // app.connectMicroservice<MicroserviceOptions>({
+  //   transport: Transport.KAFKA,
+  //   options: {
+  //     client: {
+  //       clientId: 'event-server',
+  //       brokers: [process.env.KAFKA_BROKER],
+  //     },
+  //     consumer: {
+  //       groupId: 'user-event-group',
+  //     },
+  //   },
+  // });
 
   const config = new DocumentBuilder()
     .setTitle('Event API')

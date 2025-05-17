@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { getProxyRoutes } from 'config/proxy.config';
 import { NextFunction, Request, Response } from 'express';
 import {
   createProxyMiddleware,
   Options as HttpProxyOptions,
 } from 'http-proxy-middleware';
+import { getProxyRoutes } from 'src/config/proxy.config';
 
 @Injectable()
 export class GatewayService {

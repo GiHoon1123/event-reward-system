@@ -72,14 +72,14 @@ export class GatewayController {
     await this.gatewayService.forward(req, res);
   }
 
-  @All(['/events', '/events/*']) // ✅ 둘 다 매칭
+  @All(['/events', '/events/*']) // 둘 다 매칭
   @UseGuards(JwtAuthGuard, DenyRolesGuard)
   @DenyRoles('AUDITOR') // 감사자는 접근 불가
   async publicRead(@Req() req, @Res() res) {
     return this.gatewayService.forward(req, res);
   }
 
-  // 🔐 기본 인증 보호 (나머지 라우팅 처리)
+  // 기본 인증 보호 (나머지 라우팅 처리)
   @All('*')
   @UseGuards(JwtAuthGuard)
   async proxy(@Req() req: Request, @Res() res: Response) {
