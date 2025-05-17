@@ -55,7 +55,9 @@ export class UserService {
 
     await this.userRepository.updateRefreshToken(user.id!, refreshToken);
 
-    await this.kafkaProducer.sendLoginEvent(email);
+    if (user.role == Role.ADMIN || user.role == Role.USER) {
+      await this.kafkaProducer.sendLoginEvent(email);
+    }
 
     return { accessToken, refreshToken };
   }

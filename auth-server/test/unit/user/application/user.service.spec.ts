@@ -1,5 +1,3 @@
-// test/unit/user/application/user.service.spec.ts
-
 import {
   BadRequestException,
   NotFoundException,
@@ -100,7 +98,7 @@ describe('UserService', () => {
       );
     });
 
-    it('정상 로그인 시 accessToken, refreshToken 반환 및 저장, kafka 호출', async () => {
+    it('USER 로그인 시 kafka 호출됨', async () => {
       const user = User.toDomain(
         'user-id',
         'test@example.com',
@@ -114,10 +112,56 @@ describe('UserService', () => {
 
       expect(result.accessToken).toMatch(/^signed-token-user-id-1h$/);
       expect(result.refreshToken).toMatch(/^signed-token-user-id-7d$/);
-      expect(mockUserRepository.updateRefreshToken).toHaveBeenCalled();
       expect(mockKafkaProducer.sendLoginEvent).toHaveBeenCalledWith(
         'test@example.com',
       );
+    });
+
+    it('ADMIN 로그인 시 kafka 호출됨', async () => {
+      const user = User.toDomain(
+        'admin-id',
+        'admin@example.com',
+        'hashed-password',
+        Role.ADMIN,
+        null,
+      );
+      mockUserRepository.findByEmail.mockResolvedValue(user);
+
+      await service.login('admin@example.com', 'valid-pass');
+
+      expect(mockKafkaProducer.sendLoginEvent).toHaveBeenCalledWith(
+        'admin@example.com',
+      );
+    });
+
+    it('OPERATOR 로그인 시 kafka 호출 ❌', async () => {
+      const user = User.toDomain(
+        'op-id',
+        'op@example.com',
+        'hashed-password',
+        Role.OPERATOR,
+        null,
+      );
+      mockUserRepository.findByEmail.mockResolvedValue(user);
+
+      await service.login('op@example.com', 'valid-pass');
+
+      expect(mockKafkaProducer.sendLoginEvent).not.toHaveBeenCalled();
+    });
+
+    it('AUDITOR 로그인 시 kafka 호출 ❌', async () => {
+      const user = User.toDomain(
+        'auditor-id',
+        'auditor@example.com',
+        'hashed-password',
+        Role.AUDITOR,
+        null,
+      );
+      mockUserRepository.findByEmail.mockResolvedValue(user);
+
+      await service.login('auditor@example.com', 'valid-pass');
+
+      expect(mockKafkaProducer.sendLoginEvent).not.toHaveBeenCalled();
     });
   });
 

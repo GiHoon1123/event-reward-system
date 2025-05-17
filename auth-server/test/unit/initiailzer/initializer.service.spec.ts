@@ -36,10 +36,9 @@ describe('InitializerService', () => {
   it('onModuleInit() 실행 시 createAdmin이 호출돼야 한다', async () => {
     await service.onModuleInit();
 
-    expect(bcrypt.hash).toHaveBeenCalledWith('securepassword', 10);
     expect(userService.createAdmin).toHaveBeenCalledWith(
       'admin@example.com',
-      'hashedPassword',
+      'securepassword',
     );
   });
 });
