@@ -12,6 +12,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    return { email: payload.email, role: payload.role };
+    console.log('payload', payload);
+    return {
+      email: payload.email,
+      roles: [payload.role], // 역할을 배열로 포함
+    };
   }
 }

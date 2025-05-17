@@ -1,6 +1,4 @@
-// test/unit/auth/roles.guard.spec.ts
-
-import { ForbiddenException } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RolesGuard } from '../../../src/auth/roles.guard';
 
@@ -9,55 +7,49 @@ describe('RolesGuard', () => {
   let reflector: Reflector;
 
   beforeEach(() => {
-    reflector = new Reflector();
+    reflector = {
+      getAllAndOverride: jest.fn(),
+    } as any;
+
     guard = new RolesGuard(reflector);
   });
 
-  // 공통 mock context 함수
-  const mockContext = (role?: string | null) =>
+  const mockContext = (user?: any): ExecutionContext =>
     ({
       switchToHttp: () => ({
-        getRequest: () => ({
-          user: role ? { role } : {},
-        }),
+        getRequest: () => ({ user }),
       }),
-      getHandler: () => {},
-      getClass: () => {},
-    }) as any;
+      getHandler: () => ({}),
+      getClass: () => ({}),
+    }) as unknown as ExecutionContext;
 
-  it('유저 역할이 허용된 역할에 포함될 경우 true 반환', () => {
-    jest
-      .spyOn(reflector, 'getAllAndOverride')
-      .mockReturnValue(['ADMIN', 'USER']); // 허용된 역할
+  it('역할 메타데이터가 없으면 true를 반환해야 한다', () => {
+    (reflector.getAllAndOverride as jest.Mock).mockReturnValue(undefined);
 
-    const context = mockContext('USER');
-    const result = guard.canActivate(context);
-
-    expect(result).toBe(true);
+    const context = mockContext();
+    expect(guard.canActivate(context)).toBe(true);
   });
 
-  it('유저 역할이 허용된 역할에 포함되지 않으면 ForbiddenException 발생', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(['ADMIN']); // 허용된 역할
+  it('user.roles에 필요한 역할이 포함되면 true를 반환해야 한다', () => {
+    (reflector.getAllAndOverride as jest.Mock).mockReturnValue(['ADMIN']);
 
-    const context = mockContext('USER');
-
-    expect(() => guard.canActivate(context)).toThrowError(ForbiddenException);
+    const context = mockContext({ roles: ['USER', 'ADMIN'] });
+    expect(guard.canActivate(context)).toBe(true);
   });
 
-  it('@Roles 데코레이터가 없으면 true 반환', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(undefined); // 메타데이터 없음
+  it('user.roles에 필요한 역할이 없으면 ForbiddenException이 발생해야 한다', () => {
+    (reflector.getAllAndOverride as jest.Mock).mockReturnValue(['ADMIN']);
 
-    const context = mockContext('ANY');
-    const result = guard.canActivate(context);
+    const context = mockContext({ roles: ['USER'] });
 
-    expect(result).toBe(true);
+    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
   });
 
-  it('user 정보가 없는 경우 ForbiddenException 발생', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(['ADMIN']);
+  it('user 정보가 없으면 ForbiddenException이 발생해야 한다', () => {
+    (reflector.getAllAndOverride as jest.Mock).mockReturnValue(['USER']);
 
-    const context = mockContext(null); // 유저 없음
+    const context = mockContext(undefined);
 
-    expect(() => guard.canActivate(context)).toThrowError(ForbiddenException);
+    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
   });
 });

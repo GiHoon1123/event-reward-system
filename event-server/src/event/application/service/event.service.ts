@@ -8,6 +8,7 @@ import { EventRepository } from 'src/event/infra/event.repository';
 import { Event } from '../../domain/event';
 import { AddRewardsCommand } from '../command/add-rewards.command';
 import { CreateEventCommand } from '../command/create-event.command';
+import { EventStatusChangeCommand } from '../command/event-status-chagne-command';
 
 @Injectable()
 export class EventService {
@@ -37,6 +38,13 @@ export class EventService {
 
   async addRewards(command: AddRewardsCommand): Promise<void> {
     const event = await this.eventRepository.findActiveById(command.eventId);
+    console.log('event', event);
+    console.log('command', command);
+    if (event.createdBy != command.requestedBy) {
+      throw new BadRequestException(
+        `이벤트 상태 변경은 해당 이벤트를 등록한 유저만 가능합니다. (이벤트 등록 유저: ${event.createdBy})`,
+      );
+    }
 
     const rewards = command.rewards.map((r) => Reward.create(r.name, r.amount));
 
@@ -66,21 +74,16 @@ export class EventService {
     return await this.eventRepository.findByIdOrThrow(eventId);
   }
 
-  async changeStatus(
-    eventId: string,
-    to: 'ACTIVE' | 'INACTIVE',
-    requestedBy: string,
-  ): Promise<void> {
+  async changeStatus(command: EventStatusChangeCommand): Promise<void> {
+    const { eventId, status, email } = command;
     const event = await this.eventRepository.findByIdOrThrow(eventId);
-    if (event.createdBy != requestedBy) {
+    if (event.createdBy != email) {
       throw new BadRequestException(
         `이벤트 상태 변경은 해당 이벤트를 등록한 유저만 가능합니다. (이벤트 등록 유저: ${event.createdBy})`,
       );
     }
     const updated =
-      to === 'ACTIVE'
-        ? event.markActive(requestedBy)
-        : event.markInactive(requestedBy);
+      status === 'ACTIVE' ? event.markActive(email) : event.markInactive(email);
 
     await this.eventRepository.updateStatus(eventId, updated.status);
   }

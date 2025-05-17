@@ -19,7 +19,7 @@ export class UserRewardHistoryController {
   constructor(
     private readonly userLoginEventRewardService: UserLoginEventRewardService,
   ) {}
-  @Get('rewards/history/me')
+  @Get('users/rewards/history')
   @ApiOperation({ summary: '유저 보상 요청 이력 조회' })
   @ApiHeader({
     name: 'x-user-email',

@@ -20,7 +20,7 @@ export class UserRewardController {
     private readonly userLoginEventRewardService: UserLoginEventRewardService,
   ) {}
 
-  @Post('rewards/users/:eventId')
+  @Post('users/rewards/:eventId')
   @ApiHeader({
     name: 'x-user-email',
     required: true,
@@ -84,7 +84,7 @@ export class UserRewardController {
     return new CommonResponse(201, '보상 요청이 성공 되었습니다.');
   }
 
-  @Get('rewards/users/:eventId/available')
+  @Get('users/rewards/:eventId/available')
   @ApiHeader({
     name: 'x-user-email',
     description: 'Gateway에서 전달된 사용자 이메일 (예: user@example.com)',

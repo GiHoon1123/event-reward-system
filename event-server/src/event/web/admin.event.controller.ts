@@ -13,6 +13,7 @@ import { CreateEventCommand } from 'src/event/application/command/create-event.c
 
 import { MongoIdValidationPipe } from 'src/common/pipe/mongo-id-validation.pipe';
 
+import { EventStatusChangeCommand } from '../application/command/event-status-chagne-command';
 import { EventService } from '../application/service/\bevent.service';
 import { ChangeEventStatusRequestDto } from './dto/change-event-status.request';
 import { CreateEventRequestDto } from './dto/create-event.request';
@@ -165,7 +166,8 @@ export class AdminEventController {
     @Headers('x-user-email') email: string,
     @Body() dto: ChangeEventStatusRequestDto,
   ): Promise<CommonResponse<void>> {
-    await this.eventService.changeStatus(eventId, dto.status, email);
+    const command = new EventStatusChangeCommand(eventId, dto.status, email);
+    await this.eventService.changeStatus(command);
     return new CommonResponse(
       200,
       `이벤트 상태가 ${dto.status}로 변경되었습니다.`,

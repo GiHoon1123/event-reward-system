@@ -18,7 +18,7 @@ export class UserProgressController {
     private readonly userLoginEventProgressService: UserLoginEventProgressService,
   ) {}
 
-  @Post('progress/users/login')
+  @Post('/users/progress/login')
   @ApiHeader({
     name: 'x-user-email',
     description: '로그인한 유저의 이메일 (예: user@example.com)',
@@ -50,7 +50,7 @@ export class UserProgressController {
     );
   }
 
-  @Get('progress/users/:eventId')
+  @Get('/users/progress/:eventId')
   @ApiHeader({
     name: 'x-user-email',
     description: '요청 유저 이메일 (예: user@example.com)',
@@ -113,7 +113,7 @@ export class UserProgressController {
   }
 
   @ApiOperation({ summary: '이벤트 완료 처리' })
-  @Post('progress/users/:eventId/complete')
+  @Post('/users/progress/:eventId/complete')
   @ApiHeader({
     name: 'x-user-email',
     description: '요청 유저 이메일 (예 user@example.com)',

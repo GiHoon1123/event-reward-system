@@ -1,5 +1,4 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/application/user.service';
 
 @Injectable()
@@ -9,7 +8,7 @@ export class InitializerService implements OnModuleInit {
   async onModuleInit() {
     const email = process.env.ADMIN_EMAIL!;
     const password = process.env.ADMIN_PASSWORD!;
-    const hashed = await bcrypt.hash(password, 10);
-    await this.userService.createAdmin(email, hashed);
+
+    await this.userService.createAdmin(email, password);
   }
 }
