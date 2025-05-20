@@ -149,7 +149,7 @@ Auth Server
 
 Gateway Server
 
-↓ (4) 이후 모든 요청에서 토큰 검증 + 권한 확인
+↓ (4) 이후 모든 요청에서 헤더에 있는 토큰 검증 + 권한 확인 (Authorization: Bearer {access toekn})
 
 ↓ (5) 사용자 이메일을 헤더로 삽입하여 이벤트 서버로 요청 전달
 
