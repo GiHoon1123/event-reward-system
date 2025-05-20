@@ -79,7 +79,11 @@ export class AuthController {
   async registerOperator(
     @Body() dto: RegisterUserRequestDto,
   ): Promise<CommonResponse<void>> {
-    const command = new RegisterUserCommand(dto.email, dto.password, Role.USER);
+    const command = new RegisterUserCommand(
+      dto.email,
+      dto.password,
+      Role.OPERATOR,
+    );
     await this.userService.register(command);
     return new CommonResponse(201, 'OPERATOR 등록 성공');
   }
@@ -114,7 +118,11 @@ export class AuthController {
   async registerAuditor(
     @Body() dto: RegisterUserRequestDto,
   ): Promise<CommonResponse<void>> {
-    const command = new RegisterUserCommand(dto.email, dto.password, Role.USER);
+    const command = new RegisterUserCommand(
+      dto.email,
+      dto.password,
+      Role.AUDITOR,
+    );
     await this.userService.register(command);
     return new CommonResponse(201, 'AUDITOR 등록 성공');
   }
@@ -149,7 +157,11 @@ export class AuthController {
   async registerAdmin(
     @Body() dto: RegisterUserRequestDto,
   ): Promise<CommonResponse<void>> {
-    const command = new RegisterUserCommand(dto.email, dto.password, Role.USER);
+    const command = new RegisterUserCommand(
+      dto.email,
+      dto.password,
+      Role.ADMIN,
+    );
     await this.userService.register(command);
     return new CommonResponse(201, 'ADMIN 등록 성공');
   }
