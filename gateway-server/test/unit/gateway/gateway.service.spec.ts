@@ -32,7 +32,7 @@ describe('GatewayService', () => {
   });
 
   it('매칭되는 경로가 있을 때 createProxyMiddleware가 호출돼야 한다', async () => {
-    const proxyMock = jest.fn(); // 실제로 프록시 미들웨어를 흉내냄
+    const proxyMock = jest.fn();
     (createProxyMiddleware as jest.Mock).mockReturnValue(proxyMock);
 
     jest.spyOn(proxyConfig, 'getProxyRoutes').mockReturnValue({
@@ -60,5 +60,84 @@ describe('GatewayService', () => {
     );
 
     expect(proxyMock).toHaveBeenCalledWith(req, res, next);
+  });
+
+  it('onProxyReq가 user 헤더를 설정하고 body를 전달해야 한다', () => {
+    const onProxyReqFn = (createProxyMiddleware as jest.Mock).mock.calls[0][0]
+      .onProxyReq;
+
+    const req = {
+      user: { email: 'user@example.com', role: 'ADMIN' },
+      body: { key: 'value' },
+      headers: { 'content-type': 'application/json' },
+    } as any;
+
+    const proxyReq = {
+      setHeader: jest.fn(),
+      write: jest.fn(),
+    };
+
+    onProxyReqFn(proxyReq, req);
+
+    expect(proxyReq.setHeader).toHaveBeenCalledWith(
+      'x-user-email',
+      'user@example.com',
+    );
+    expect(proxyReq.setHeader).toHaveBeenCalledWith('x-user-role', 'ADMIN');
+    expect(proxyReq.setHeader).toHaveBeenCalledWith(
+      'Content-Length',
+      Buffer.byteLength(JSON.stringify(req.body)),
+    );
+    expect(proxyReq.write).toHaveBeenCalledWith(JSON.stringify(req.body));
+  });
+
+  it('onProxyReq는 body가 없으면 write를 호출하지 않아야 한다', () => {
+    const onProxyReqFn = (createProxyMiddleware as jest.Mock).mock.calls[0][0]
+      .onProxyReq;
+
+    const req = {
+      user: { email: 'user@example.com', role: 'ADMIN' },
+      body: undefined,
+      headers: { 'content-type': 'application/json' },
+    } as any;
+
+    const proxyReq = {
+      setHeader: jest.fn(),
+      write: jest.fn(),
+    };
+
+    onProxyReqFn(proxyReq, req);
+
+    expect(proxyReq.setHeader).toHaveBeenCalledWith(
+      'x-user-email',
+      'user@example.com',
+    );
+    expect(proxyReq.setHeader).toHaveBeenCalledWith('x-user-role', 'ADMIN');
+    expect(proxyReq.write).not.toHaveBeenCalled();
+  });
+
+  it('onProxyReq는 content-type이 application/json이 아니면 write를 호출하지 않아야 한다', () => {
+    const onProxyReqFn = (createProxyMiddleware as jest.Mock).mock.calls[0][0]
+      .onProxyReq;
+
+    const req = {
+      user: { email: 'user@example.com', role: 'ADMIN' },
+      body: { key: 'value' },
+      headers: { 'content-type': 'text/plain' },
+    } as any;
+
+    const proxyReq = {
+      setHeader: jest.fn(),
+      write: jest.fn(),
+    };
+
+    onProxyReqFn(proxyReq, req);
+
+    expect(proxyReq.setHeader).toHaveBeenCalledWith(
+      'x-user-email',
+      'user@example.com',
+    );
+    expect(proxyReq.setHeader).toHaveBeenCalledWith('x-user-role', 'ADMIN');
+    expect(proxyReq.write).not.toHaveBeenCalled();
   });
 });
