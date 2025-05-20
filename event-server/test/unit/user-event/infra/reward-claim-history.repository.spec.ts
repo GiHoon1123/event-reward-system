@@ -94,4 +94,29 @@ describe('RewardClaimHistoryRepository', () => {
     expect(result.length).toBe(2);
     expect(result.every((r) => r.status === 'SUCCESS')).toBe(true);
   });
+
+  it('보상 히스토리가 없으면 getClaimedAmount는 0을 반환해야 한다', async () => {
+    const total = await repository.getClaimedAmount(
+      'no-event',
+      'no-user@example.com',
+      '없는보상',
+    );
+    expect(total).toBe(0);
+  });
+
+  it('보상 히스토리가 없으면 findByEventAndEmail은 빈 배열을 반환해야 한다', async () => {
+    const result = await repository.findByEventAndEmail(
+      'no-event',
+      'no-user@example.com',
+    );
+    expect(result).toEqual([]);
+  });
+
+  it('보상 히스토리가 없으면 findSuccessHistories는 빈 배열을 반환해야 한다', async () => {
+    const result = await repository.findSuccessHistories(
+      'no-event',
+      'no-user@example.com',
+    );
+    expect(result).toEqual([]);
+  });
 });
