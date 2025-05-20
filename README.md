@@ -4,6 +4,7 @@
 NestJS + MongoDB + Kafka를 사용하여 인증, 이벤트 처리, 보상 요청 흐름을 구성하였으며,
 메이플스토리 실서비스 수준의 트래픽을 가정하여 구조를 설계하였습니다.
 
+- OS: macOS (Unix-like, Linux 기반 호환)
 - 기술 스택: NestJS, MongoDB, Kafka, Docker
 - 아키텍처: Auth Server / Event Server / Gateway Server (MSA)
 - 주요 특징: 조건 기반 보상, 메시지 큐 기반 비동기 처리, 멱등성/동시성 제어, RESTful API 설계
