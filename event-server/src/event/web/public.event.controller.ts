@@ -40,7 +40,8 @@ export class PublicEventController {
   })
   @ApiResponse({
     status: 200,
-    description: '이벤트 목록 조회 성공',
+    description:
+      '이벤트 목록을 페이징으로 조회합니다. 이벤트 활성화 여부와 상관 없이 모든 이벤트가 조회됩니다.',
     schema: {
       example: {
         statusCode: 200,
@@ -110,7 +111,8 @@ export class PublicEventController {
   })
   @ApiOperation({
     summary: '이벤트 상세 조회',
-    description: '이벤트의 상세 정보 및 보상 목록을 조회합니다.',
+    description:
+      '이벤트의 상세 정보 및 보상 목록을 조회합니다. 이벤트 활성화 여부와 상관 없이 모든 이벤트가 조회됩니다.',
   })
   @ApiResponse({
     status: 200,
