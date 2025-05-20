@@ -418,8 +418,7 @@ MongoDB의 철학인 **역정규화(denormalization)** 에 따라 구조를 개�
       "amount": 100,
       "status": "SUCCESS",
       "requestId": "req-uuid-123"
-    },
-    ...
+    }
   ]
 }
 ```
@@ -457,7 +456,7 @@ const lockKey = `${email}:${rewardName}`;
 const acquired = lockManager.acquire(lockKey);
 
 if (!acquired) {
-  throw new ConflictException('동시 요청 중입니다.');
+  throw new ConflictException("동시 요청 중입니다.");
 }
 ```
 
