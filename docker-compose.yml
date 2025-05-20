@@ -1,0 +1,75 @@
+version: "3.8"
+
+services:
+  event-mongo:
+    image: mongo:6
+    container_name: event-mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  event-zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: event-zookeeper
+    ports:
+      - "2182:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  event-kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: event-kafka
+    ports:
+      - "9093:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: event-zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://event-kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - event-zookeeper
+
+  auth-server:
+    build:
+      context: ./auth-server
+    container_name: auth-server
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://event-mongo:27017/auth-db
+      - KAFKA_BROKER=event-kafka:9092
+    depends_on:
+      - event-mongo
+      - event-kafka
+    command: sh -c "until nc -z event-kafka 9092; do echo 'waiting for kafka'; sleep 1; done && npm run start"
+
+  event-server:
+    build:
+      context: ./event-server
+    container_name: event-server
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGO_URI=mongodb://event-mongo:27017/event-db
+      - KAFKA_BROKER=event-kafka:9092
+    depends_on:
+      - event-mongo
+      - event-kafka
+    command: npm run start
+
+  gateway-server:
+    build:
+      context: ./gateway-server
+    container_name: gateway-server
+    ports:
+      - "3002:3002"
+    depends_on:
+      - auth-server
+      - event-server
+    command: npm run start
+
+volumes:
+  mongo-data:
