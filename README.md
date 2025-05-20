@@ -514,7 +514,7 @@ docker compose build --no-cache
 docker compose up
 ```
 
-### 3. Swagger 문서 접속
+### 3. Swagger 문서 접속 (컨테이너 실행 후 접속까지 20초 정도 시간이 소요됩니다)
 
 - **Auth Server**: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 - **Event Server**: [http://localhost:3001/api-docs](http://localhost:3001/api-docs)
